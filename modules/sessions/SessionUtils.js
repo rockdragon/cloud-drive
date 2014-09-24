@@ -1,8 +1,7 @@
 var crypto = require('crypto');
 var redisClient = require('redis').createClient('6379', '127.0.0.1');
+var config = require('../config/configUtils');
 
-var session_key = 'session_id';
-var SECRET = 'cloud-drive__moyerock';
 var EXPIRES = 20 * 60 * 1000;
 
 var sign = function (val, secret) {
@@ -15,7 +14,7 @@ var sign = function (val, secret) {
 var generate = function () {
     var session = {};
     session.id = (new Date()).getTime() + Math.random().toString();
-    session.id = sign(session.id, SECRET);
+    session.id = sign(session.id, config.getConfigs().SECRET);
     session.expire = (new Date()).getTime() + EXPIRES;
     return session;
 };
@@ -38,7 +37,7 @@ var setHeader = function (req, res, next) {
     res.writeHead = function () {
         var cookies = res.getHeader('Set-Cookie');
         cookies = cookies || [];
-        var session = serialize(session_key, req.session.id);
+        var session = serialize(config.getConfigs().session_key, req.session.id);
         cookies = Array.isArray(cookies) ? cookies.concat(session) : [cookies, session];
         res.setHeader('Set-Cookie', cookies);
         return writeHead.apply(this, arguments);
@@ -49,7 +48,7 @@ var setHeader = function (req, res, next) {
 
 exports = module.exports = function session() {
     return function session(req, res, next) {
-        var id = req.cookies[session_key];
+        var id = req.cookies[config.getConfigs().session_key];
         if (!id) {
             req.session = generate();
             id = req.session.id;
@@ -82,7 +81,7 @@ exports = module.exports = function session() {
 };
 
 module.exports.set = function(req, name, val){
-    var id = req.cookies[session_key];
+    var id = req.cookies[config.getConfigs().session_key];
     if (id) {
         redisClient.hset(id, name, val, function (err) {
             if (err)
@@ -91,7 +90,7 @@ module.exports.set = function(req, name, val){
     }
 };
 module.exports.get = function(req, name, callback){
-    var id = req.cookies[session_key];
+    var id = req.cookies[config.getConfigs().session_key];
     if (id) {
         redisClient.hget(id, name, function (err, reply) {
             callback(err, reply);

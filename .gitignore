@@ -5,6 +5,10 @@ logs
 #idea
 .idea
 
+# config files
+*.cfg
+*.ini
+
 # Runtime data
 pids
 *.pid
