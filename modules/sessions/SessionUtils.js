@@ -1,8 +1,15 @@
 var crypto = require('crypto');
-var redisClient = require('redis').createClient('6379', '127.0.0.1');
 var config = require('../config/configUtils');
 
 var EXPIRES = 20 * 60 * 1000;
+
+var openClient = function(){
+    var client = require('redis').createClient('6379', '127.0.0.1');
+    client.on('error', function(err){
+        console.log(err);
+    });
+    return client;
+};
 
 var sign = function (val, secret) {
     return val + '.' + crypto
@@ -53,26 +60,33 @@ exports = module.exports = function session() {
             req.session = generate();
             id = req.session.id;
             var json = JSON.stringify(req.session);
-            redisClient.hset(id, 'session', json, function (err) {
+            var client = openClient();
+            client.hset(id, 'session', json, function (err) {
                 if (err)
                     console.log(err);
+                client.quit();
                 setHeader(req, res, next);
             });
         } else {
-            redisClient.hget(id, 'session', function (err, reply) {
+            var client = openClient();
+            client.hget(id, 'session', function (err, reply) {
                 if (err)
                     console.log(err);
                 var session = JSON.parse(reply);
                 console.log(session);
-                if (session.expire > (new Date()).getTime()) {
+                if (session && session.expire > (new Date()).getTime()) {
                     session.expire = (new Date()).getTime() + EXPIRES;
                     req.session = session;
                 } else {
                     req.session = generate();
-                    redisClient.mset(id, req.session, function (err) {
-                        console.log(err);
+                    client.mset(id, req.session, function (err) {
+                        if(err)
+                            console.log(err);
+                        client.quit();
                     });
                 }
+
+                client.quit();
 
                 setHeader(req, res, next);
             });
@@ -83,17 +97,21 @@ exports = module.exports = function session() {
 module.exports.set = function(req, name, val){
     var id = req.cookies[config.getConfigs().session_key];
     if (id) {
-        redisClient.hset(id, name, val, function (err) {
+        var client = openClient();
+        client.hset(id, name, val, function (err) {
             if (err)
                 console.log(err);
+            client.quit();
         });
     }
 };
 module.exports.get = function(req, name, callback){
     var id = req.cookies[config.getConfigs().session_key];
     if (id) {
-        redisClient.hget(id, name, function (err, reply) {
+        var client = openClient();
+        client.hget(id, name, function (err, reply) {
             callback(err, reply);
+            client.quit();
         });
     }
 };
