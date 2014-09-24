@@ -22,6 +22,10 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
+//redis session handler
+var session = require('./modules/sessions/sessionUtils');
+app.use(session());
+
 app.use('/', routes);
 app.use('/users', users);
 
