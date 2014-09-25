@@ -64,7 +64,7 @@ ring.prototype.select = function (key) {
             return virtualNode.node;
         }
     }
-    console.log(this.node[0].label);
+    console.log(this.nodes[0].label);
     return this.nodes[0].node;
 };
 ring.prototype.add = function (node) {

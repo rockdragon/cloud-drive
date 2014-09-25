@@ -2,11 +2,13 @@ var crypto = require('crypto');
 var config = require('../config/configUtils');
 
 var EXPIRES = 20 * 60 * 1000;
+var redisMatrix = require('./redisMatrix');
 
-var openClient = function(){
-    var client = require('redis').createClient('6379', '127.0.0.1');
-    client.on('error', function(err){
-        console.log(err);
+var openClient = function (id) {
+    var node = redisMatrix.select(id);
+    var client = require('redis').createClient(node.port, node.address);
+    client.on('error', function (err) {
+        console.log('error: ' + err);
     });
     return client;
 };
@@ -53,6 +55,17 @@ var setHeader = function (req, res, next) {
     next();
 };
 
+var setRedisSession = function (client, id, key, val, callback) {
+    client.hset(id, key, val, function (err, reply) {
+        if (err)
+            console.log('hset ' + key + 'error: ' + err);
+        console.log('hset ' + key + ' reply is:' + reply);
+        client.quit();
+
+        callback();
+    });
+};
+
 exports = module.exports = function session() {
     return function session(req, res, next) {
         var id = req.cookies[config.getConfigs().session_key];
@@ -60,44 +73,43 @@ exports = module.exports = function session() {
             req.session = generate();
             id = req.session.id;
             var json = JSON.stringify(req.session);
-            var client = openClient();
-            client.hset(id, 'session', json, function (err) {
-                if (err)
-                    console.log(err);
-                client.quit();
-                setHeader(req, res, next);
-            });
+            var client = openClient(id);
+            setRedisSession(client, id, 'session', json,
+                function () {
+                    setHeader(req, res, next);
+                });
         } else {
-            var client = openClient();
+            console.log('session_id found: ' + id);
+            var client = openClient(id);
             client.hget(id, 'session', function (err, reply) {
                 if (err)
-                    console.log(err);
+                    console.log('hget error:' + err);
                 var session = JSON.parse(reply);
-                console.log(session);
+                var sessionChanged = false;
                 if (session && session.expire > (new Date()).getTime()) {
                     session.expire = (new Date()).getTime() + EXPIRES;
                     req.session = session;
                 } else {
                     req.session = generate();
-                    client.mset(id, req.session, function (err) {
-                        if(err)
-                            console.log(err);
-                        client.quit();
-                    });
+                    sessionChanged = true;
                 }
-
-                client.quit();
-
-                setHeader(req, res, next);
+                var json = JSON.stringify(req.session);
+                if (sessionChanged) {
+                    setRedisSession(client, id, 'session', json,
+                        function () {
+                            setHeader(req, res, next);
+                        });
+                } else
+                    setHeader(req, res, next);
             });
         }
     };
 };
 
-module.exports.set = function(req, name, val){
+module.exports.set = function (req, name, val) {
     var id = req.cookies[config.getConfigs().session_key];
     if (id) {
-        var client = openClient();
+        var client = openClient(id);
         client.hset(id, name, val, function (err) {
             if (err)
                 console.log(err);
@@ -105,10 +117,10 @@ module.exports.set = function(req, name, val){
         });
     }
 };
-module.exports.get = function(req, name, callback){
+module.exports.get = function (req, name, callback) {
     var id = req.cookies[config.getConfigs().session_key];
     if (id) {
-        var client = openClient();
+        var client = openClient(id);
         client.hget(id, name, function (err, reply) {
             callback(err, reply);
             client.quit();
