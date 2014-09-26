@@ -84,23 +84,30 @@ exports = module.exports = function session() {
             client.hget(id, 'session', function (err, reply) {
                 if (err)
                     console.log('hget error:' + err);
-                var session = JSON.parse(reply);
-                var sessionChanged = false;
-                if (session && session.expire > (new Date()).getTime()) {
-                    session.expire = (new Date()).getTime() + EXPIRES;
-                    req.session = session;
-                } else {
-                    req.session = generate();
-                    sessionChanged = true;
+
+                var needChange = true;
+                if (reply) {
+                    var session = JSON.parse(reply);
+                    if (session.expire > (new Date()).getTime()) {
+                        session.expire = (new Date()).getTime() + EXPIRES;
+                        req.session = session;
+                        needChange = false;
+                        var json = JSON.stringify(req.session);
+                        setRedisSession(client, id, 'session', json,
+                            function () {
+                                setHeader(req, res, next);
+                            });
+                    }
                 }
-                var json = JSON.stringify(req.session);
-                if (sessionChanged) {
+
+                if (needChange) {
+                    req.session = generate();
+                    var json = JSON.stringify(req.session);
                     setRedisSession(client, id, 'session', json,
                         function () {
                             setHeader(req, res, next);
                         });
-                } else
-                    setHeader(req, res, next);
+                }
             });
         }
     };
