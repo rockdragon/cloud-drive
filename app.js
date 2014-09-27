@@ -5,9 +5,6 @@ var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
 
-var routes = require('./routes/index');
-var users = require('./routes/users');
-
 var app = express();
 
 // view engine setup
@@ -26,9 +23,25 @@ app.use(express.static(path.join(__dirname, 'public')));
 var session = require('./modules/sessions/sessionUtils');
 app.use(session());
 
+//routers
+var routes = require('./routes/index');
+var users = require('./routes/users');
 app.use('/', routes);
 app.use('/users', users);
 
+//authentication
+var passport = require('./modules/auth/authUtils').passport;
+app.use(passport.initialize());
+app.get('/auth/google',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    function (req, res) {
+        res.redirect('/');
+    });
+app.get('/auth/google/return',
+    passport.authenticate('google', { failureRedirect: '/login' }),
+    function (req, res) {
+        res.redirect('/');
+    });
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {

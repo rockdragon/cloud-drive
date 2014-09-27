@@ -18,7 +18,7 @@ var sign = function (val, secret) {
         .createHmac('sha1', secret)
         .update(val)
         .digest('base64')
-        .replace(/\=+$/, '');
+        .replace(/[\/\+=]/g, '');
 };
 var generate = function () {
     var session = {};
@@ -46,7 +46,9 @@ var setHeader = function (req, res, next) {
     res.writeHead = function () {
         var cookies = res.getHeader('Set-Cookie');
         cookies = cookies || [];
+        console.log('writeHead, cookies: ' + cookies);
         var session = serialize(config.getConfigs().session_key, req.session.id);
+        console.log('writeHead, session: ' + session);
         cookies = Array.isArray(cookies) ? cookies.concat(session) : [cookies, session];
         res.setHeader('Set-Cookie', cookies);
         return writeHead.apply(this, arguments);
@@ -60,7 +62,7 @@ var hsetRedis = function (id, key, val, callback) {
     client.hset(id, key, val, function (err, reply) {
         if (err)
             console.log('hset ' + key + 'error: ' + err);
-        console.log('hset ' + key + ' reply is:' + reply);
+        console.log('hset [' + key + ']:[' + val + '] reply is:' + reply);
         client.quit();
 
         callback.call(null, err, reply);
@@ -72,7 +74,6 @@ var hgetRedis = function (id, key, callback) {
         if (err)
             console.log('hget error:' + err);
         client.quit();
-
         callback.call(null, err, reply);
     });
 };
@@ -92,6 +93,7 @@ exports = module.exports = function session() {
             console.log('session_id found: ' + id);
             hgetRedis(id, 'session', function (err, reply) {
                 var needChange = true;
+                console.log('reply: ' + reply);
                 if (reply) {
                     var session = JSON.parse(reply);
                     if (session.expire > (new Date()).getTime()) {
@@ -108,9 +110,10 @@ exports = module.exports = function session() {
 
                 if (needChange) {
                     req.session = generate();
+                    id = req.session.id; // id need change
                     var json = JSON.stringify(req.session);
                     hsetRedis(id, 'session', json,
-                        function () {
+                        function (err, reply) {
                             setHeader(req, res, next);
                         });
                 }
