@@ -47,16 +47,16 @@ app.use('/', routes);
 app.use('/users', users);
 app.use('/login', login);
 
-var config = require('./modules/config/configUtils');
-app.get('/auth/google', function (req, res) {
-    var options = [
-        'https://accounts.google.com/o/oauth2/auth?response_type=code',
-        '&redirect_uri=http://www.fun4.tv:3000/auth/google/return',
-        '&scope=email%20profile',
-            '&client_id=' + config.getConfigs().GOOGLE_CLIENT_ID
-    ];
-    res.redirect(options.join(''));
-});
+//var config = require('./modules/config/configUtils');
+//app.get('/auth/google', function (req, res) {
+//    var options = [
+//        'https://accounts.google.com/o/oauth2/auth?response_type=code',
+//        '&redirect_uri=http://www.fun4.tv:3000/auth/google/return',
+//        '&scope=email%20profile',
+//            '&client_id=' + config.getConfigs().GOOGLE_CLIENT_ID
+//    ];
+//    res.redirect(options.join(''));
+//});
 
 //var url = require('url');
 //var http = require('http');
