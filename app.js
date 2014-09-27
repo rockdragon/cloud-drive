@@ -36,6 +36,7 @@ app.get('/auth/google',
 app.get('/auth/google/return',
     passport.authenticate('google', { failureRedirect: '/login' }),
     function (req, res) {
+        console.log(req);
         res.redirect('/');
     });
 
