@@ -38,7 +38,7 @@ app.get('/auth/google/return',
     function (req, res) {
         if(req.user){
             console.log(req.user);
-            session.set(req, 'user', user, function(err, reply){
+            session.set(req, 'user', JSON.stringify(req.user), function(err, reply){
             });
         }
         res.redirect('/');
