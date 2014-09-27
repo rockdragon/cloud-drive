@@ -1,13 +1,18 @@
 var passport = require('passport')
-    , GoogleStrategy = require('passport-google').Strategy;
+    , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy;
+
+var config = require('../config/configUtils');
 
 passport.use(new GoogleStrategy({
-        returnURL: 'http://localhost:3000/auth/google/return',
-        realm: 'http://localhosts:3000/'
+        authorizationURL: 'https://accounts.google.com/o/oauth2/auth',
+        tokenURL: 'https://accounts.google.com/o/oauth2/token',
+        clientID: config.getConfigs().GOOGLE_CLIENT_ID,
+        clientSecret: config.getConfigs().GOOGLE_CLIENT_SECRET,
+        callbackURL: 'http://www.fun4.tv:3000/auth/google/return'
     },
-    function(identifier, profile, done) {
-        User.findOrCreate({ openId: identifier }, function(err, user) {
-            done(err, user);
+    function(accessToken, refreshToken, profile, done) {
+        User.findOrCreate({ googleId: profile.id }, function (err, user) {
+            return done(err, user);
         });
     }
 ));

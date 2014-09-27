@@ -17,6 +17,6 @@
         "mongoose": "*",
         "redis": "*",
         "passport": "*",
-        "passport-google": "*"
+        "passport-google-oauth": "*"
     }
 }
