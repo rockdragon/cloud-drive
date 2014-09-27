@@ -12,13 +12,21 @@ passport.use(new GoogleStrategy({
     },
     function (accessToken, refreshToken, profile, done) {
         var userInfo = {
-            'userid' : profile.id,
+            'userid': profile.id,
             'name': profile.displayName,
-            'email' : profile.emails[0].value,
-            'avatar' : profile._json.picture
+            'email': profile.emails[0].value,
+            'avatar': profile._json.picture
         };
         return done(null, userInfo);
     }
 ));
+
+passport.serializeUser(function (user, done) {
+    done(null, user);
+});
+
+passport.deserializeUser(function (obj, done) {
+    done(null, obj);
+});
 
 module.exports.passport = passport;
