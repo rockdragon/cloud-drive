@@ -10,10 +10,8 @@ passport.use(new GoogleStrategy({
         clientSecret: config.getConfigs().GOOGLE_CLIENT_SECRET,
         callbackURL: 'http://www.fun4.tv:3000/auth/google/return'
     },
-    function(accessToken, refreshToken, profile, done) {
-        User.findOrCreate({ googleId: profile.id }, function (err, user) {
-            return done(err, user);
-        });
+    function (accessToken, refreshToken, profile, done) {
+        return done(null, profile);
     }
 ));
 
