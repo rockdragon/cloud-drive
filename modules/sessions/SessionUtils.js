@@ -55,14 +55,25 @@ var setHeader = function (req, res, next) {
     next();
 };
 
-var setRedisSession = function (client, id, key, val, callback) {
+var hsetRedis = function (id, key, val, callback) {
+    var client = openClient(id);
     client.hset(id, key, val, function (err, reply) {
         if (err)
             console.log('hset ' + key + 'error: ' + err);
         console.log('hset ' + key + ' reply is:' + reply);
         client.quit();
 
-        callback();
+        callback.call(null, err, reply);
+    });
+};
+var hgetRedis = function (id, key, callback) {
+    var client = openClient(id);
+    client.hget(id, key, function (err, reply) {
+        if (err)
+            console.log('hget error:' + err);
+        client.quit();
+
+        callback.call(null, err, reply);
     });
 };
 
@@ -73,18 +84,13 @@ exports = module.exports = function session() {
             req.session = generate();
             id = req.session.id;
             var json = JSON.stringify(req.session);
-            var client = openClient(id);
-            setRedisSession(client, id, 'session', json,
+            hsetRedis(id, 'session', json,
                 function () {
                     setHeader(req, res, next);
                 });
         } else {
             console.log('session_id found: ' + id);
-            var client = openClient(id);
-            client.hget(id, 'session', function (err, reply) {
-                if (err)
-                    console.log('hget error:' + err);
-
+            hgetRedis(id, 'session', function (err, reply) {
                 var needChange = true;
                 if (reply) {
                     var session = JSON.parse(reply);
@@ -93,7 +99,7 @@ exports = module.exports = function session() {
                         req.session = session;
                         needChange = false;
                         var json = JSON.stringify(req.session);
-                        setRedisSession(client, id, 'session', json,
+                        hsetRedis(id, 'session', json,
                             function () {
                                 setHeader(req, res, next);
                             });
@@ -103,7 +109,7 @@ exports = module.exports = function session() {
                 if (needChange) {
                     req.session = generate();
                     var json = JSON.stringify(req.session);
-                    setRedisSession(client, id, 'session', json,
+                    hsetRedis(id, 'session', json,
                         function () {
                             setHeader(req, res, next);
                         });
@@ -116,21 +122,22 @@ exports = module.exports = function session() {
 module.exports.set = function (req, name, val) {
     var id = req.cookies[config.getConfigs().session_key];
     if (id) {
-        var client = openClient(id);
-        client.hset(id, name, val, function (err) {
-            if (err)
-                console.log(err);
-            client.quit();
+        hsetRedis(id, name, val, function (err, reply) {
+
         });
     }
 };
+/*
+ get session by name
+ @req request object
+ @name session name
+ @callback your callback
+ */
 module.exports.get = function (req, name, callback) {
     var id = req.cookies[config.getConfigs().session_key];
     if (id) {
-        var client = openClient(id);
-        client.hget(id, name, function (err, reply) {
+        hgetRedis(id, name, function (err, reply) {
             callback(err, reply);
-            client.quit();
         });
     }
 };
