@@ -11,7 +11,8 @@ passport.use(new GoogleStrategy({
         callbackURL: 'http://www.fun4.tv:3000/auth/google/return'
     },
     function (accessToken, refreshToken, profile, done) {
-        return done(null, profile);
+        console.log(JSON.stringify(profile));
+        return done(null, null);
     }
 ));
 
