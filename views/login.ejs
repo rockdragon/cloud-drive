@@ -3,11 +3,18 @@
     <div class="page-header" id="banner">
         <div class="row">
             <div class="col-lg-8 col-md-7 col-sm-6">
-                <h1><%= title %></h1>
+                <h2><%= title %></h2>
 
-                <p>
-                    <a href="/auth/google">Sign In with Google</a>
-                </p>
+                <div class="widget-login">
+                    <a href="/user/oauth/google" class="btn btn-default btn-sn-google">
+                        <span class="icon-sn-google"></span>
+                        Google 账号
+                    </a>
+                    <a href="/user/oauth/facebook" class="btn btn-default btn-sn-facebook">
+                        <span class="icon-sn-facebook"></span>
+                        Facebook 账号
+                    </a>
+                </div>
             </div>
         </div>
     </div>

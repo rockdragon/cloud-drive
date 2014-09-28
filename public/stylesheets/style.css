@@ -1566,7 +1566,7 @@ a.bg-danger:hover {
 
 .page-header {
     padding-bottom: 9.5px;
-    margin: 42px 0 21px;
+    margin: 62px 0 21px;
     border-bottom: 1px solid #eeeeee;
 }
 
@@ -7616,4 +7616,44 @@ button.close {
 .panel-danger .panel-title,
 .panel-info .panel-title {
     color: #fff;
+}
+
+/* social login */
+#banner {
+    min-height: 300px;
+    border-bottom: none;
+}
+.widget-login [class*="btn-sn-"] {
+    margin: 0 2px 6px 0;
+}
+[class*="btn-sn-"], [class*="btn-sn-"]:hover, [class*="btn-sn-"]:active {
+    border: none;
+    color: #fff;
+}
+[class*="icon-sn-"] {
+    display: inline-block;
+    background-image: url("/images/social.png");
+    background-repeat: no-repeat;
+    width: 20px;
+    height: 20px;
+    vertical-align: middle;
+    -moz-border-radius: 2px;
+    -webkit-border-radius: 2px;
+    border-radius: 2px;
+    -moz-background-size: auto 20px;
+    -o-background-size: auto 20px;
+    -webkit-background-size: auto 20px;
+    background-size: auto 20px;
+}
+.btn-sn-google {
+    background: #4285F4;
+}
+.icon-sn-google {
+    background-position: 0px 0;
+}
+.btn-sn-facebook {
+    background: #4862A3;
+}
+.icon-sn-facebook {
+    background-position: -100px 0;
 }
