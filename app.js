@@ -46,10 +46,9 @@ app.get('/user', function(req, res){
     console.log('----- received temporary sid: ' + id);
     session.getById(id, 'user', function(err, reply){
         if(reply){
-            var user = JSON.parse(reply);
             session.deleteById(id, 'session', function(err, reply){});
             session.deleteById(id, 'user', function(err, reply){});
-            session.set(req, 'user', user, function(err, reply){});
+            session.set(req, 'user', reply, function(err, reply){});
         }
     });
     res.redirect('/');
