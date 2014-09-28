@@ -6,7 +6,10 @@
                 <h1><%= title %></h1>
 
                 <% if (user){ %>
-                    <img src="<%= user.avatar %>" />
+                    <dl>
+                        <dt><%= user.name %></dt>
+                        <dd><img src="<%= user.avatar %>" /></dd>
+                    </dl>
                 <% } %>
             </div>
         </div>
