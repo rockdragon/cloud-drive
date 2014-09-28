@@ -37,12 +37,23 @@ app.get('/auth/google/return',
     passport.authenticate('google', { failureRedirect: '/login' }),
     function (req, res) {
         if(req.user){
-            console.log(req.user);
-            session.set(req, 'user', JSON.stringify(req.user), function(err, reply){
-            });
+            session.set(req, 'user', JSON.stringify(req.user), function(err, reply){});
+            res.redirect('/user?sid=' + req.cookies['session_id']);
         }
-        res.redirect('/');
     });
+app.get('/user', function(req, res){
+    var id = req.query.sid;
+    console.log('----- received temporary sid: ' + id);
+    session.getById(id, function(err, reply){
+        if(reply){
+            var user = JSON.parse(reply);
+            session.deleteById(id, 'session', function(err, reply){});
+            session.deleteById(id, 'user', function(err, reply){});
+            session.set(req, 'user', user, function(err, reply){});
+        }
+    });
+    res.redirect('/');
+});
 
 //routers
 var routes = require('./routes/index');

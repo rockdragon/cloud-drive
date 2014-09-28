@@ -4,15 +4,6 @@ var config = require('../config/configUtils');
 var EXPIRES = 20 * 60 * 1000;
 var redisMatrix = require('./redisMatrix');
 
-var openClient = function (id) {
-    var node = redisMatrix.select(id);
-    var client = require('redis').createClient(node.port, node.address);
-    client.on('error', function (err) {
-        console.log('error: ' + err);
-    });
-    return client;
-};
-
 var sign = function (val, secret) {
     return val + '.' + crypto
         .createHmac('sha1', secret)
@@ -57,27 +48,6 @@ var setHeader = function (req, res, next) {
     next();
 };
 
-var hsetRedis = function (id, key, val, callback) {
-    var client = openClient(id);
-    client.hset(id, key, val, function (err, reply) {
-        if (err)
-            console.log('hset ' + key + 'error: ' + err);
-        console.log('hset [' + key + ']:[' + val + '] reply is:' + reply);
-        client.quit();
-
-        callback.call(null, err, reply);
-    });
-};
-var hgetRedis = function (id, key, callback) {
-    var client = openClient(id);
-    client.hget(id, key, function (err, reply) {
-        if (err)
-            console.log('hget error:' + err);
-        client.quit();
-        callback.call(null, err, reply);
-    });
-};
-
 exports = module.exports = function session() {
     return function session(req, res, next) {
         var id = req.cookies[config.getConfigs().session_key];
@@ -85,13 +55,13 @@ exports = module.exports = function session() {
             req.session = generate();
             id = req.session.id;
             var json = JSON.stringify(req.session);
-            hsetRedis(id, 'session', json,
+            redisMatrix.hsetRedis(id, 'session', json,
                 function () {
                     setHeader(req, res, next);
                 });
         } else {
             console.log('session_id found: ' + id);
-            hgetRedis(id, 'session', function (err, reply) {
+            redisMatrix.hgetRedis(id, 'session', function (err, reply) {
                 var needChange = true;
                 console.log('reply: ' + reply);
                 if (reply) {
@@ -101,7 +71,7 @@ exports = module.exports = function session() {
                         req.session = session;
                         needChange = false;
                         var json = JSON.stringify(req.session);
-                        hsetRedis(id, 'session', json,
+                        redisMatrix.hsetRedis(id, 'session', json,
                             function () {
                                 setHeader(req, res, next);
                             });
@@ -112,7 +82,7 @@ exports = module.exports = function session() {
                     req.session = generate();
                     id = req.session.id; // id need change
                     var json = JSON.stringify(req.session);
-                    hsetRedis(id, 'session', json,
+                    redisMatrix.hsetRedis(id, 'session', json,
                         function (err, reply) {
                             setHeader(req, res, next);
                         });
@@ -125,7 +95,7 @@ exports = module.exports = function session() {
 module.exports.set = function (req, name, val) {
     var id = req.cookies[config.getConfigs().session_key];
     if (id) {
-        hsetRedis(id, name, val, function (err, reply) {
+        redisMatrix.hsetRedis(id, name, val, function (err, reply) {
 
         });
     }
@@ -139,7 +109,22 @@ module.exports.set = function (req, name, val) {
 module.exports.get = function (req, name, callback) {
     var id = req.cookies[config.getConfigs().session_key];
     if (id) {
-        hgetRedis(id, name, function (err, reply) {
+        redisMatrix.hgetRedis(id, name, function (err, reply) {
+            callback(err, reply);
+        });
+    }
+};
+
+module.exports.getById = function(id, name, callback){
+    if (id) {
+        redisMatrix.hgetRedis(id, name, function (err, reply) {
+            callback(err, reply);
+        });
+    }
+};
+module.exports.deleteById = function(id, name, callback){
+    if(id){
+        redisMatrix.hdelRedis(id, name, function(err, reply){
             callback(err, reply);
         });
     }
