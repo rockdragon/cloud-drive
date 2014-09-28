@@ -12,7 +12,7 @@ router.get('/', function (req, res) {
             var user = JSON.parse(reply);
             res.render('index', { title: 'Welcome to cloud-drive.', user: user });
         } else {
-            res.render('index', { title: 'Welcome to cloud-drive.' });
+            res.render('index', { title: 'Welcome to cloud-drive.', user: null });
         }
     });
 });
