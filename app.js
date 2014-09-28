@@ -44,7 +44,7 @@ app.get('/auth/google/return',
 app.get('/user', function(req, res){
     var id = req.query.sid;
     console.log('----- received temporary sid: ' + id);
-    session.getById(id, function(err, reply){
+    session.getById(id, 'user', function(err, reply){
         if(reply){
             var user = JSON.parse(reply);
             session.deleteById(id, 'session', function(err, reply){});
