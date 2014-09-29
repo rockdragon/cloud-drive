@@ -1,7 +1,6 @@
 # cloud-drive [云盘]
----
 #### Formation of configuration
----
+
 ```JSON
 {
     "session_key": "session_id",
@@ -19,6 +18,5 @@
 }
 ```
 #### License
----
 
 The MIT License (MIT)
