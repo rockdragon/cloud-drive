@@ -27,7 +27,8 @@ passport.use(new FacebookStrategy({
         clientID: config.getConfigs().FACEBOOK_APP_ID,
         clientSecret: config.getConfigs().FACEBOOK_APP_SECRET,
         callbackURL: config.getConfigs().FACEBOOK_RETURN_URL,
-        enableProof: false
+        enableProof: false,
+        profileFields: ['id', 'displayName', 'photos', 'emails']
     },
     function (accessToken, refreshToken, profile, done) {
         console.log('facebook profile: ' + JSON.stringify(profile));
@@ -52,7 +53,7 @@ passport.deserializeUser(function (obj, done) {
 
 module.exports = function (app, session) {
     app.use(passport.initialize());
-    
+
     app.get('/auth/google',
         passport.authenticate('google', {
             scope: 'https://www.google.com/m8/feeds https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
