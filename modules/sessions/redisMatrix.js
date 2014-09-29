@@ -4,6 +4,9 @@ var hashringUtils = require('../hashring/hashringUtils'),
 
 var config = require('../config/configUtils');
 
+//default key expire, a week long
+var EXPIRES = 7 * 24 * 60 * 60;
+
 var nodes = config.getConfigs().nodes;
 for (var i = 0, len = nodes.length; i < len; i++) {
     var n = nodes[i];
@@ -36,6 +39,13 @@ module.exports.hsetRedis = function (id, key, val, callback) {
         if (err)
             console.log('hset ' + key + 'error: ' + err);
         console.log('hset [' + key + ']:[' + val + '] reply is:' + reply);
+
+        client.expire(id, EXPIRES, function(err, reply){
+            if (err)
+                console.log('expire ' + key + 'error: ' + err);
+            console.log('expire [' + key + ']:[' + EXPIRES + '] reply is:' + reply);
+        });
+
         client.quit();
 
         callback.call(null, err, reply);
