@@ -31,7 +31,13 @@ passport.use(new FacebookStrategy({
     },
     function (accessToken, refreshToken, profile, done) {
         console.log('facebook profile: ' + JSON.stringify(profile));
-        var userInfo = {};
+        var userInfo = {
+            'type': 'facebook',
+            'userid': profile.id,
+            'name': profile.displayName,
+            'email': profile.emails[0].value,
+            'avatar': profile.photos[0].value
+        };
         return done(null, userInfo);
     }
 ));
@@ -46,12 +52,11 @@ passport.deserializeUser(function (obj, done) {
 
 module.exports = function (app, session) {
     app.use(passport.initialize());
+    
     app.get('/auth/google',
         passport.authenticate('google', {
             scope: 'https://www.google.com/m8/feeds https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
-        }),
-        function (req, res) {
-        });
+        }));
 
     app.get('/auth/google/return',
         passport.authenticate('google', { failureRedirect: '/login' }),
@@ -62,6 +67,21 @@ module.exports = function (app, session) {
                 res.redirect('/user?sid=' + req.cookies['session_id']);
             }
         });
+
+    app.get('/auth/facebook',
+        passport.authenticate('facebook', { failureRedirect: '/login', scope: ['email'] }));
+
+    app.get('/auth/facebook/return',
+        passport.authenticate('facebook', { failureRedirect: '/login' }),
+        function (req, res) {
+            if (req.user) {
+                session.set(req, 'user', JSON.stringify(req.user), function (err, reply) {
+                });
+                res.redirect('/user?sid=' + req.cookies['session_id']);
+            }
+        });
+
+    //common middle procedure
     app.get('/user', function (req, res) {
         var id = req.query.sid;
         console.log('----- received temporary sid: ' + id);
@@ -77,20 +97,4 @@ module.exports = function (app, session) {
         });
         res.redirect('/');
     });
-
-    app.get('/auth/facebook',
-        passport.authenticate('facebook', { failureRedirect: '/login' }),
-        function (req, res) {
-//        if(req.user){
-//            session.set(req, 'user', JSON.stringify(req.user), function(err, reply){});
-//            res.redirect('/user?sid=' + req.cookies['session_id']);
-//        }
-        });
-
-    app.get('/auth/facebook/return',
-        passport.authenticate('facebook', { failureRedirect: '/login' }),
-        function (req, res) {
-            // Successful authentication, redirect home.
-            res.redirect('/');
-        });
 };
