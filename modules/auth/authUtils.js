@@ -8,7 +8,7 @@ passport.use(new GoogleStrategy({
         tokenURL: 'https://accounts.google.com/o/oauth2/token',
         clientID: config.getConfigs().GOOGLE_CLIENT_ID,
         clientSecret: config.getConfigs().GOOGLE_CLIENT_SECRET,
-        callbackURL: 'http://www.fun4.tv:3000/auth/google/return'
+        callbackURL: config.getConfigs().GOOGLE_RETURN_URL
     },
     function (accessToken, refreshToken, profile, done) {
         var userInfo = {
