@@ -13,6 +13,7 @@ passport.use(new GoogleStrategy({
     },
     function (accessToken, refreshToken, profile, done) {
         var userInfo = {
+            'type': 'google',
             'userid': profile.id,
             'name': profile.displayName,
             'email': profile.emails[0].value,
@@ -77,7 +78,7 @@ module.exports = function (app, session) {
         res.redirect('/');
     });
 
-    app.get('/auth/facebook/return',
+    app.get('/auth/facebook',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
         function (req, res) {
 //        if(req.user){
@@ -86,7 +87,7 @@ module.exports = function (app, session) {
 //        }
         });
 
-    app.get('/auth/facebook/callback',
+    app.get('/auth/facebook/return',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
         function (req, res) {
             // Successful authentication, redirect home.
