@@ -24,41 +24,14 @@ var session = require('./modules/sessions/sessionUtils');
 app.use(session());
 
 //authentication
-var passport = require('./modules/auth/authUtils').passport;
-app.use(passport.initialize());
-app.get('/auth/google',
-    passport.authenticate('google', {
-        scope: 'https://www.google.com/m8/feeds https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
-    }),
-    function (req, res) {
-    });
-
-app.get('/auth/google/return',
-    passport.authenticate('google', { failureRedirect: '/login' }),
-    function (req, res) {
-        if(req.user){
-            session.set(req, 'user', JSON.stringify(req.user), function(err, reply){});
-            res.redirect('/user?sid=' + req.cookies['session_id']);
-        }
-    });
-app.get('/user', function(req, res){
-    var id = req.query.sid;
-    console.log('----- received temporary sid: ' + id);
-    session.getById(id, 'user', function(err, reply){
-        if(reply){
-            session.deleteById(id, 'session', function(err, reply){});
-            session.deleteById(id, 'user', function(err, reply){});
-            session.set(req, 'user', reply, function(err, reply){});
-        }
-    });
-    res.redirect('/');
-});
+var authUtils = require('./modules/auth/authUtils');
+authUtils(app, session);
 
 //routers
-var routes = require('./routes/index');
+var index = require('./routes/index');
 var users = require('./routes/users');
 var login = require('./routes/login');
-app.use('/', routes);
+app.use('/', index);
 app.use('/users', users);
 app.use('/login', login);
 
