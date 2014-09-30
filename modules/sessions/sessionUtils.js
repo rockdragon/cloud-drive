@@ -112,20 +112,26 @@ module.exports.get = function (req, name, callback) {
         redisMatrix.hgetRedis(id, name, function (err, reply) {
             callback(err, reply);
         });
+    } else {
+        callback();
     }
 };
 
-module.exports.getById = function(id, name, callback){
+module.exports.getById = function (id, name, callback) {
     if (id) {
         redisMatrix.hgetRedis(id, name, function (err, reply) {
             callback(err, reply);
         });
+    } else {
+        callback();
     }
 };
-module.exports.deleteById = function(id, name, callback){
-    if(id){
-        redisMatrix.hdelRedis(id, name, function(err, reply){
+module.exports.deleteById = function (id, name, callback) {
+    if (id) {
+        redisMatrix.hdelRedis(id, name, function (err, reply) {
             callback(err, reply);
         });
+    } else {
+        callback();
     }
 };
