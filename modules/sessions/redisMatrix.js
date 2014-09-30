@@ -61,7 +61,7 @@ module.exports.expire = function(id, expireSeconds){
     var client = hashingRing.openClient(id);
     client.expire(id, expireSeconds, function(err, reply){
         if (err)
-            console.log('expire ' + key + 'error: ' + err);
-        console.log('expire [' + key + ']:[' + EXPIRES + '] reply is:' + reply);
+            console.log('expire ' + id + 'error: ' + err);
+        console.log('expire [' + id + ']:[' + expireSeconds + '] reply is:' + reply);
     });
 };
