@@ -40,13 +40,10 @@ module.exports.hsetRedis = function (id, key, val, callback) {
             console.log('hset ' + key + 'error: ' + err);
         console.log('hset [' + key + ']:[' + val + '] reply is:' + reply);
 
-        client.expire(id, EXPIRES, function(err, reply){
-            if (err)
-                console.log('expire ' + key + 'error: ' + err);
-            console.log('expire [' + key + ']:[' + EXPIRES + '] reply is:' + reply);
-        });
-
         client.quit();
+
+        //default expire
+        hashingRing.expire(id, EXPIRES);
 
         callback.call(null, err, reply);
     });
@@ -58,5 +55,13 @@ module.exports.hdelRedis = function(id, key, callback){
             console.log('hdel error:' + err);
         client.quit();
         callback.call(null, err, reply);
+    });
+};
+module.exports.expire = function(id, expireSeconds){
+    var client = hashingRing.openClient(id);
+    client.expire(id, expireSeconds, function(err, reply){
+        if (err)
+            console.log('expire ' + key + 'error: ' + err);
+        console.log('expire [' + key + ']:[' + EXPIRES + '] reply is:' + reply);
     });
 };

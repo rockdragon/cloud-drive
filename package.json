@@ -18,6 +18,7 @@
         "redis": "*",
         "passport": "*",
         "passport-google-oauth": "*",
-        "passport-facebook": "*"
+        "passport-facebook": "*",
+        "restify": "*"
     }
 }
