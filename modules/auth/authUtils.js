@@ -56,7 +56,9 @@ module.exports = function (app, session) {
 
     app.get('/auth/google',
         passport.authenticate('google', {
-            scope: 'https://www.google.com/m8/feeds https://www.googleapis.com/auth/userinfo.email https://www.googleapis.com/auth/userinfo.profile'
+            scope: 'https://www.google.com/m8/feeds' +
+                ' https://www.googleapis.com/auth/userinfo.email' +
+                ' https://www.googleapis.com/auth/userinfo.profile'
         }));
 
     app.get('/auth/google/return',
