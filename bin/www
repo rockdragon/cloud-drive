@@ -3,6 +3,7 @@
 //CPU几核？
 var cpus = require('os').cpus().length;
 var debug = require('debug')('cloud-drive');
+var env = require('../modules/config/configUtils').getConfigs().node_env;
 
 //子进程监听消息处理函数
 var workerListener = function (msg) {
@@ -26,6 +27,7 @@ if (cluster.isMaster) {
         forkWorker(workerListener);
     }
 } else {
+    process.env.NODE_ENV = env;
     var app = require('../app');
     app.set('port', process.env.PORT || 3000);
     var server = app.listen(app.get('port'), function() {
