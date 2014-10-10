@@ -4,7 +4,7 @@ var router = express.Router();
 var session = require('../modules/sessions/sessionUtils');
 
 /* GET home page. */
-router.get('/', function (req, res) {
+router.route('/').get(function (req, res) {
     session.get(req, 'user', function(err, reply){
         if(err)
             console.log(err);
