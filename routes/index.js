@@ -5,15 +5,14 @@ var session = require('../modules/sessions/sessionUtils');
 
 /* GET home page. */
 router.route('/').get(function (req, res) {
-    session.get(req, 'user', function(err, reply){
-        if(err)
+    var user = null;
+    session.get(req, 'user', function (err, reply) {
+        if (err)
             console.log(err);
-        if(reply){
-            var user = JSON.parse(reply);
-            res.render('index', { title: 'Welcome to cloud-drive.', user: user });
-        } else {
-            res.render('index', { title: 'Welcome to cloud-drive.', user: null });
+        if (reply) {
+            user = JSON.parse(reply);
         }
+        res.render('index', {title: 'Welcome to cloud-drive.', user: user});
     });
 });
 
