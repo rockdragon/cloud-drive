@@ -11,7 +11,7 @@ router.route('/').get(function (req, res) {
         if (err)
             console.log(err);
         if (reply) {
-            user = reply;
+            user = JSON.parse(reply);
         }
         res.render('index', {title: 'Welcome to cloud-drive.', user: user});
     });
