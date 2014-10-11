@@ -15,14 +15,6 @@ router.route('/').get(function (req, res) {
         }
         res.render('index', {title: 'Welcome to cloud-drive.', user: user});
     });
-//    session.get(req, 'user', function (err, reply) {
-//        if (err)
-//            console.log(err);
-//        if (reply) {
-//            user = JSON.parse(reply);
-//        }
-//        res.render('index', {title: 'Welcome to cloud-drive.', user: user});
-//    });
 });
 
 module.exports = router;

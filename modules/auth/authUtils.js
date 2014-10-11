@@ -99,16 +99,7 @@ module.exports = function (app, session) {
                 });
             }
         });
-//        session.getById(id, 'user', function (err, reply) {
-//            if (reply) {
-//                session.deleteById(id, 'session', function (err, reply) {
-//                });
-//                session.deleteById(id, 'user', function (err, reply) {
-//                });
-//                session.set(req, 'user', reply, function (err, reply) {
-//                });
-//            }
-//        });
+
         res.redirect('/');
     });
 };

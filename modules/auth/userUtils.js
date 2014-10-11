@@ -1,4 +1,3 @@
-var Q = require('q');
 var config = require('../config/configUtils');
 
 function generateDevUser() {
@@ -29,7 +28,7 @@ module.exports.getUser = function (session, req, callback) {
     if (config.isDevelopment()) {
         return callback(null, generateDevUser());
     } else {
-        return Q.fcall(session.get(req, 'user')).then(function (err, reply) {
+        session.get(req, 'user', function (err, reply) {
             return callback(err, JSON.parse(reply));
         });
     }
