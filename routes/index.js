@@ -7,7 +7,7 @@ var userUtils = require('../modules/auth/userUtils');
 /* GET home page. */
 router.route('/').get(function (req, res) {
     var user = null;
-    userUtils.getUser(session, function (err, reply) {
+    userUtils.getUser(session, req, function (err, reply) {
         if (err)
             console.log(err);
         if (reply) {

@@ -25,11 +25,11 @@ module.exports.getUserById = function (session, id, callback) {
 /*
  get current user
  */
-module.exports.getUser = function (session, callback) {
+module.exports.getUser = function (session, req, callback) {
     if (config.isDevelopment()) {
         return callback(null, generateDevUser());
     } else {
-        return Q.fcall(req, 'user').then(function (err, reply) {
+        return Q.fcall(session.get(req, 'user')).then(function (err, reply) {
             return callback(err, JSON.parse(reply));
         });
     }
