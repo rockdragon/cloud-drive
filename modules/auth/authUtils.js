@@ -89,7 +89,7 @@ module.exports = function (app, session) {
     app.get('/user', function (req, res) {
         var id = req.query.sid;
         console.log('----- received temporary sid: ' + id);
-        userUtils.getUser(app, session, id, function (err, reply) {
+        userUtils.getUserById(session, id, function (err, reply) {
             if (reply) {
                 session.deleteById(id, 'session', function (err, reply) {
                 });
