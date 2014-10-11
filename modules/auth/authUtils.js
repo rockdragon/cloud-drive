@@ -3,7 +3,7 @@ var passport = require('passport')
     , FacebookStrategy = require('passport-facebook').Strategy;
 
 var config = require('../config/configUtils');
-var Q = require('q');
+var userUtils = require('./userUtils');
 
 passport.use(new GoogleStrategy({
         authorizationURL: 'https://accounts.google.com/o/oauth2/auth',
@@ -89,7 +89,7 @@ module.exports = function (app, session) {
     app.get('/user', function (req, res) {
         var id = req.query.sid;
         console.log('----- received temporary sid: ' + id);
-        module.getUser(app, session, function (err, reply) {
+        userUtils.getUser(app, session, function (err, reply) {
             if (reply) {
                 session.deleteById(id, 'session', function (err, reply) {
                 });
@@ -113,22 +113,3 @@ module.exports = function (app, session) {
     });
 };
 
-/*
- get current user
- */
-module.exports.getUser = function (session, callback) {
-    if (config.isDevelopment()) {
-        return callback(null,
-            {
-                'type': 'development',
-                'userid': 12345678,
-                'name': 'Developer',
-                'email': 'moyerock@gmail.com',
-                'avatar': 'https://lh3.googleusercontent.com/-AxuH90mY9tY/AAAAAAAAAAI/AAAAAAAAAAA/8kSyughgw6o/s96-c/photo.jpg'
-            });
-    } else {
-        return Q.fcall(session.getById(id, 'user')).then(function (err, reply) {
-            return callback(err, JSON.parse(reply));
-        });
-    }
-};
