@@ -16,7 +16,7 @@ module.exports.getUserById = function (session, id, callback) {
     if (config.isDevelopment()) {
         return callback(null, generateDevUser());
     } else {
-        return Q.fcall(session.getById(id, 'user')).then(function (err, reply) {
+        return session.getById(id, 'user', function (err, reply) {
             return callback(err, JSON.parse(reply));
         });
     }
