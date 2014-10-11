@@ -17,3 +17,7 @@ module.exports.getConfigs = function () {
     }
     return cache[cfgFileName];
 };
+
+module.exports.isDevelopment = function(){
+    return process.env.NODE_ENV  === 'development';
+};

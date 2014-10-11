@@ -20,6 +20,6 @@
         "passport": "*",
         "passport-google-oauth": "*",
         "passport-facebook": "*",
-        "restify": "*"
+        "q":"*"
     }
 }
