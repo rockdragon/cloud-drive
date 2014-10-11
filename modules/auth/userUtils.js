@@ -3,7 +3,7 @@ var config = require('../config/configUtils');
 /*
  get current user
  */
-module.exports.getUser = function (session, callback) {
+module.exports.getUser = function (session, callback, id) {
     if (config.isDevelopment()) {
         return callback(null,
             {
