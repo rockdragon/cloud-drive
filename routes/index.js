@@ -13,7 +13,10 @@ router.route('/').get(function (req, res) {
         if (reply) {
             user = JSON.parse(reply);
         }
-        res.render('index', {title: 'Welcome to cloud-drive.', user: user});
+        if(user)
+            res.render('user_index', {title: 'Welcome to cloud-drive.', user: user});
+        else
+            res.render('index', {title: 'Welcome to cloud-drive.', user: user});
     });
 });
 

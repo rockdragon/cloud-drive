@@ -7657,3 +7657,60 @@ button.close {
 .icon-sn-facebook {
     background-position: -100px 0;
 }
+
+/* drive buttons */
+#global-actions {
+    float: right;
+    margin-top: 20px;
+    margin-right: 10px;
+}
+ul.horizontal {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: inline;
+}
+#global-actions .action {
+    position: relative;
+}
+ul.horizontal li {
+    display: inline;
+}
+#global-actions .action label {
+    display: inline-block;
+    line-height: 100%;
+}
+#global-actions .action a, #global-actions .action .selectable {
+    border: 1px solid #fff;
+    border-radius: 2px;
+    display: inline-block;
+    padding: 3px 5px;
+    margin: 0;
+    line-height: 100%;
+    background-color: transparent;
+    cursor:pointer;
+}
+.sprite_web {
+    width: 16px;
+    height: 16px;
+    background-image: url(/images/misc_icons.png);
+    background-repeat: no-repeat;
+    background-position: 0 16px;
+}
+.s_web_upload_16 {
+    background-position: left -10521px;
+    width: 19px;
+    height: 19px;
+}
+.s_web_folder_add {
+    background-position: left -2611px;
+    width: 19px;
+    height: 19px;
+}
+.s_web_search {
+    float: right !important;
+}
+.s_web_search input {
+    margin-left:10px;
+    height:30px;
+}
