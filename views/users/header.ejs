@@ -10,7 +10,7 @@
 <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
         <div class="navbar-header">
-            <a href="../../" class="navbar-brand">Cloud-Driver</a>
+            <a href="/" class="navbar-brand">Cloud-Driver</a>
             <!--<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">-->
             <!--<span class="icon-bar"></span>-->
             <!--<span class="icon-bar"></span>-->
@@ -36,7 +36,7 @@
                         <ul class="horizontal">
                             <li class="action">
                                 <label for="upload_button">
-                                    <a id="upload_button"  name="action" data-value="upload"
+                                    <a id="upload_button" name="action" data-value="upload"
                                        data-title="上传…">
                                         <img alt="上传…" src="/images/icon_spacer.gif"
                                              class="sprite sprite_web s_web_upload_16">
@@ -45,7 +45,7 @@
                             </li>
                             <li class="action">
                                 <label for="new_folder_button">
-                                    <a id="new_folder_button"  name="action" data-value="upload"
+                                    <a id="new_folder_button" name="action" data-value="upload"
                                        data-title="新的文件夹">
                                         <img alt="新的文件夹" src="/images/icon_spacer.gif"
                                              class="sprite sprite_web s_web_folder_add">
@@ -63,6 +63,22 @@
 
             </ul>
 
+        </div>
+    </div>
+</div>
+
+<div id="uploader" class="modal fade">
+    <div class="modal-dialog modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+                <h4 class="modal-title">上传到Cloud Drive</h4>
+            </div>
+            <div class="modal-body">
+                <input type="button" id="choose-button" value="选择文件" class="btn btn-primary">
+                <label id="fileName"></label>
+                <input type="file" id="choose-file" class="hidden" />
+            </div>
         </div>
     </div>
 </div>

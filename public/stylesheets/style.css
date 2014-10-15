@@ -7714,3 +7714,9 @@ ul.horizontal li {
     margin-left:10px;
     height:30px;
 }
+
+/* uploader */
+#uploader{
+    position: fixed;
+    top: 90px;
+}
