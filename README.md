@@ -14,7 +14,11 @@
     "GOOGLE_RETURN_URL" : "http://www.xxx.com/auth/google/return",
     "FACEBOOK_APP_ID" : "2423465456457804",
     "FACEBOOK_APP_SECRET": "sf323424g8254c0d9725eae454g5b5d",
-    "FACEBOOK_RETURN_URL" : "http://www.xxx.com/auth/facebook/return"
+    "FACEBOOK_RETURN_URL" : "http://www.xxx.com/auth/facebook/return",
+    "upload_setting":{
+        "win32" : "D:\files",
+        "linux": "/var/files"
+    }
 }
 ```
 #### License
