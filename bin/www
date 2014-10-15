@@ -4,6 +4,7 @@
 var cpus = require('os').cpus().length;
 var debug = require('debug')('cloud-drive');
 var env = require('../modules/config/configUtils').getConfigs().node_env;
+var sticky = require('sticky-session');
 
 //子进程监听消息处理函数
 var workerListener = function (msg) {
@@ -33,7 +34,7 @@ if (cluster.isMaster) {
     var server = app.listen(app.get('port'), function() {
         debug('Express server listening on port ' + server.address().port);
     });
-    return server;
+    return sticky(server);
 }
 
 //Cluster收到子进程退出消息

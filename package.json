@@ -20,6 +20,8 @@
         "passport": "*",
         "passport-google-oauth": "*",
         "passport-facebook": "*",
-        "formidable": "*"
+        "formidable": "*",
+        "sticky-session": "*",
+        "socket.io": "*"
     }
 }

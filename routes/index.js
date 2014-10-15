@@ -14,7 +14,7 @@ router.route('/').get(function (req, res) {
             user = JSON.parse(reply);
         }
         if(user)
-            res.render('user_index', {title: 'Welcome to cloud-drive.', user: user});
+            res.render('users/user_index', {title: 'Welcome to cloud-drive.', user: user});
         else
             res.render('index', {title: 'Welcome to cloud-drive.', user: user});
     });
