@@ -21,3 +21,10 @@ module.exports.getConfigs = function () {
 module.exports.isDevelopment = function(){
     return process.env.NODE_ENV  === 'development';
 };
+
+module.exports.getUploadRoot = function(){
+    if(cache[cfgFileName].upload_setting && cache[cfgFileName].upload_setting[process.platform]){
+        return cache[cfgFileName].upload_setting[process.platform];
+    }
+    return '/tmp';
+};

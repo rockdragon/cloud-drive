@@ -1,4 +1,6 @@
-var config = require('../config/configUtils');
+var configUtils = require('../config/configUtils');
+var sessionUtils = require('../sessions/sessionUtils');
+var path = require('path');
 
 function generateDevUser() {
     return JSON.stringify({
@@ -12,8 +14,8 @@ function generateDevUser() {
 /*
  get user by userid
  */
-module.exports.getUserById = function (session, id, callback) {
-    if (config.isDevelopment()) {
+function getUserById(session, id, callback) {
+    if (configUtils.isDevelopment()) {
         return callback(null, generateDevUser());
     } else {
         return session.getById(id, 'user', function (err, reply) {
@@ -21,11 +23,12 @@ module.exports.getUserById = function (session, id, callback) {
         });
     }
 };
+module.exports.getUserById = getUserById;
 /*
  get current user
  */
-module.exports.getUser = function (session, req, callback) {
-    if (config.isDevelopment()) {
+function getUser(session, req, callback) {
+    if (configUtils.isDevelopment()) {
         return callback(null, generateDevUser());
     } else {
         session.get(req, 'user', function (err, reply) {
@@ -33,3 +36,21 @@ module.exports.getUser = function (session, req, callback) {
         });
     }
 };
+module.exports.getUser = getUser;
+
+/*
+ get user upload path
+ */
+function getUserRootPath(sessionId, callback) {
+    getUser(sessionUtils, sessionId, function (err, reply) {
+        var uploadPath = '/tmp/';
+        if (err)
+            console.log(err);
+        if (reply) {
+            var user = JSON.parse(reply);
+            uploadPath = path.join(configUtils.getUploadRoot(), user.type, user.userid.toString());
+        }
+        callback(err, uploadPath);
+    });
+};
+module.exports.getUserRootPath = getUserRootPath;
