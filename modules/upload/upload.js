@@ -22,7 +22,7 @@ module.exports.bind = function (server) {
             var name = data.Name;
             var size = data.Size;
             var sessionId = data.SessionId;
-            console.log('uploading %s, size: %d, session: %s', name, size, sessionId);
+            console.log('received start event: %s, size: %d, session: %s', name, size, sessionId);
 
             //combine path
             userUtils.getUserRootPath(sessionId, function (err, userRootPath) {
@@ -55,8 +55,20 @@ module.exports.bind = function (server) {
         });
         //uploading
         socket.on('upload', function (data) {
-            console.log('uploading %s, size: %d', data['Name'], data['Size']);
-            respTime(socket);
+            var name = data.Name;
+            var segment = data.Segment;
+            var sessionId = data.SessionId;
+            console.log('received upload event: %s, length: %d, session: %s', name, segment.length, sessionId);
+
+            Files[name].downloaded += segment.length;
+            Files[name].data = segment;
+            if(Files[name].downloaded === Files[name].fileSize){
+                fs.write(Files[name].handler, Files[name].data, null, 'Binary', function(err, written){
+                    if(err)
+                        console.log('file write error: ' + err.toString());
+                    delete Files[name];
+                });
+            }
         });
     });
 };

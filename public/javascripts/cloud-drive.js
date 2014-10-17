@@ -20,7 +20,7 @@
                     $('#fileName').val(file.name);
                     var fileReader = new FileReader();
                     fileReader.onload = function(evnt){
-                        socket.emit('upload', { 'Name' : file.name, 'Data' : evnt.target.result });
+                        socket.emit('upload', { 'Name' : file.name, 'Segment' : evnt.target.result, 'SessionId': $.cookie('session_id')});
                     };
                     socket.emit('start', {'Name' : file.name, 'Size' : file.size, 'SessionId': $.cookie('session_id')});
                 }
