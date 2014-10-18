@@ -29,14 +29,14 @@ module.exports.bind = function (server) {
 
             //combine path
             userUtils.getUserRootPath(sessionId, function (err, userRootPath) {
-                Files[name] = {
+                Files[name] = { // define storage structure
                     fileSize: size,
                     data: '',
                     downloaded: 0,
                     handler: null
                 };
                 Files[name].getPercent = function () {
-                    return (this.downloaded / this.fileSize) * 100;
+                    return parseInt((this.downloaded / this.fileSize) * 100);
                 };
                 Files[name].getPosition = function () {
                     return this.downloaded / 524288;
@@ -74,7 +74,7 @@ module.exports.bind = function (server) {
             console.log('[upload] received upload event: %s, segment length: %d, session: %s', name, segment.length, sessionId);
 
             Files[name].downloaded += segment.length;
-            Files[name].data = segment;
+            Files[name].data += segment;
             if (Files[name].downloaded === Files[name].fileSize) {
                 fs.write(Files[name].handler, Files[name].data, null, 'Binary', function (err, written) {
                     if (err)
@@ -86,7 +86,7 @@ module.exports.bind = function (server) {
                 fs.write(Files[name].handler, Files[name].data, null, 'Binary', function (err, Writen) {
                     if (err)
                         console.log('[upload] file write error: ' + err.toString());
-                    Files[name].data = ""; //Reset The Buffer
+                    Files[name].data = ''; //Reset The Buffer
                     socket.emit('moreData', {
                         'position': Files[name].getPosition(),
                         'percent': Files[name].getPercent() });

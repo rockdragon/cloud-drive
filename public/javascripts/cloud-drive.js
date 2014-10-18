@@ -54,7 +54,7 @@
                     socket.on('done', function(data){
                         console.log('[done]: ' + JSON.stringify(data));
                         $('#fileName').val('');
-                        updateProgressBar(0);
+                        updateProgressBar(100);
                     });
                 }
             });
@@ -64,6 +64,6 @@
     }
 
     function updateProgressBar(percent){
-        $('#ProgressBar').val(percent);
+        $('#progressBar').val(percent);
     }
 })();
