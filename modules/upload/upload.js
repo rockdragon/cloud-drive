@@ -1,6 +1,7 @@
 var fs = require('fs');
 var path = require('path');
 var userUtils = require('../auth/userUtils');
+var pathUtils = require('./pathUtils');
 
 module.exports.bind = function (server) {
     var Files = {};
@@ -9,6 +10,7 @@ module.exports.bind = function (server) {
     var respTime = function (socket) {
         socket.send((new Date()).getTime());
     };
+
     io.sockets.on('connection', function (socket) {
         console.log('a client connection established: ' + socket.id);
 
@@ -33,6 +35,12 @@ module.exports.bind = function (server) {
                     downloaded: 0,
                     handler: null
                 };
+                Files[name].getPercent = function () {
+                    return (this.downloaded / this.fileSize) * 100;
+                };
+                Files[name].getPosition = function () {
+                    return this.downloaded / 524288;
+                };
                 var position = 0;
                 try {
                     var filePath = path.join(userRootPath, name);
@@ -44,12 +52,17 @@ module.exports.bind = function (server) {
                     }
                 } catch (err) {
                 }
+                var filePathAbsolute = path.dirname(filePath);
+                if (!fs.exists(filePathAbsolute)) {
+                    console.log('creating path: ' + filePathAbsolute);
+                    pathUtils.mkdirSync(filePathAbsolute);
+                }
                 fs.open(filePath, 'a', 0755, function (err, fd) {
                     if (err)
                         console.log('file open error: ' + err.toString());
                     else {
                         Files[name].handler = fd;
-                        socket.emit('moreData', {position: position, percent: 0});
+                        socket.emit('moreData', {'position': position, 'percent': 0});
                     }
                 });
             });
@@ -63,13 +76,29 @@ module.exports.bind = function (server) {
 
             Files[name].downloaded += segment.length;
             Files[name].data = segment;
-            if(Files[name].downloaded === Files[name].fileSize){
-                fs.write(Files[name].handler, Files[name].data, null, 'Binary', function(err, written){
-                    if(err)
+            if (Files[name].downloaded === Files[name].fileSize) {
+                fs.write(Files[name].handler, Files[name].data, null, 'Binary', function (err, written) {
+                    if (err)
                         console.log('file write error: ' + err.toString());
                     delete Files[name];
+                    socket.emit('done', {name: name});
+                });
+            } else if (Files[name].data.length > 10485760) { //If the Data Buffer reaches 10MB
+                fs.write(Files[name].handler, Files[name].data, null, 'Binary', function (err, Writen) {
+                    if (err)
+                        console.log('file write error: ' + err.toString());
+                    Files[name].data = ""; //Reset The Buffer
+                    socket.emit('moreData', {
+                        'position': Files[name].getPosition(),
+                        'percent': Files[name].getPercent() });
                 });
             }
+            else {
+                socket.emit('moreData', {
+                    'position': Files[name].getPosition(),
+                    'percent': Files[name].getPercent() });
+            }
+
         });
     });
 };
