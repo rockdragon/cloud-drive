@@ -24,8 +24,6 @@
                 $('#choose-file').click();
             });
 
-            var fileTarget = null;
-
             $('#choose-file').on('change', function () {
                 var file = document.getElementById('choose-file').files[0];
                 if (file) {
@@ -54,6 +52,7 @@
                     socket.on('done', function(data){
                         console.log('[done]: ' + JSON.stringify(data));
                         $('#fileName').val('');
+                        delete fileReader;
                         updateProgressBar(100);
                     });
                 }
