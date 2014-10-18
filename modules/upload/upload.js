@@ -25,7 +25,7 @@ module.exports.bind = function (server) {
             var name = data.Name;
             var size = data.Size;
             var sessionId = data.SessionId;
-            console.log('received start event: %s, size: %d, session: %s', name, size, sessionId);
+            console.log('[start] received start event: %s, size: %d, session: %s', name, size, sessionId);
 
             //combine path
             userUtils.getUserRootPath(sessionId, function (err, userRootPath) {
@@ -44,7 +44,7 @@ module.exports.bind = function (server) {
                 var position = 0;
                 try {
                     var filePath = path.join(userRootPath, name);
-                    console.log('sessionId: %s, uploading: %s ...', sessionId, filePath);
+                    console.log('[start] sessionId: %s, uploading: %s ...', sessionId, filePath);
                     var stat = fs.statSync(filePath);
                     if (stat.isFile()) {
                         Files[name].download = stat.size;
@@ -58,7 +58,7 @@ module.exports.bind = function (server) {
                 }
                 fs.open(filePath, 'a', 0755, function (err, fd) {
                     if (err)
-                        console.log('file open error: ' + err.toString());
+                        console.log('[start] file open error: ' + err.toString());
                     else {
                         Files[name].handler = fd;
                         socket.emit('moreData', {'position': position, 'percent': 0});
@@ -71,21 +71,21 @@ module.exports.bind = function (server) {
             var name = data.Name;
             var segment = data.Segment;
             var sessionId = data.SessionId;
-            console.log('received upload event: %s, length: %d, session: %s', name, segment.length, sessionId);
+            console.log('[upload] received upload event: %s, segment length: %d, session: %s', name, segment.length, sessionId);
 
             Files[name].downloaded += segment.length;
             Files[name].data = segment;
             if (Files[name].downloaded === Files[name].fileSize) {
                 fs.write(Files[name].handler, Files[name].data, null, 'Binary', function (err, written) {
                     if (err)
-                        console.log('file write error: ' + err.toString());
+                        console.log('[upload] file write error: ' + err.toString());
                     delete Files[name];
                     socket.emit('done', {name: name});
                 });
             } else if (Files[name].data.length > 10485760) { //If the Data Buffer reaches 10MB
                 fs.write(Files[name].handler, Files[name].data, null, 'Binary', function (err, Writen) {
                     if (err)
-                        console.log('file write error: ' + err.toString());
+                        console.log('[upload] file write error: ' + err.toString());
                     Files[name].data = ""; //Reset The Buffer
                     socket.emit('moreData', {
                         'position': Files[name].getPosition(),

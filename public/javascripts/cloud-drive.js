@@ -24,8 +24,10 @@
                 $('#choose-file').click();
             });
 
+            var fileTarget = null;
+
             $('#choose-file').on('change', function () {
-                var file = $(this)[0].files[0];
+                var file = document.getElementById('choose-file').files[0];
                 if (file) {
                     $('#fileName').val(file.name);
                     var fileReader = new FileReader();
@@ -35,14 +37,22 @@
                     socket.emit('start', {'Name': file.name, 'Size': file.size, 'SessionId': $.cookie('session_id')});
 
                     socket.on('moreData', function (data) { // more data in progress
+                        console.log('moreData: ' + JSON.stringify(data));
                         updateProgressBar(data.percent);
                         var position = data.position * 524288;
-                        var sliceFunc = file.webkitSlice ? file.webkitSlice : file.mozSlice;
-                        var newFile = sliceFunc(position, position + Math.min(524288, file.size - position));
-                        fileReader.readAsBinaryString(newFile);
+                        var newFile = null;
+                        if(file.slice)
+                            newFile = file.slice(position, position + Math.min(524288, file.size - position));
+                        else if (file.webkitSlice)
+                            newFile = file.webkitSlice(position, position + Math.min(524288, file.size - position));
+                        else if(file.mozSlice)
+                            newFile = file.mozSlice(position, position + Math.min(524288, file.size - position));
+                        if(newFile)
+                            fileReader.readAsBinaryString(newFile); // trigger upload event
                     });
 
                     socket.on('done', function(data){
+                        console.log('[done]: ' + JSON.stringify(data));
                         $('#fileName').val('');
                         updateProgressBar(0);
                     });
