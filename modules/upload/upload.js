@@ -1,5 +1,6 @@
-var userUtils = require('../auth/userUtils');
+var fs = require('fs');
 var path = require('path');
+var userUtils = require('../auth/userUtils');
 
 module.exports.bind = function (server) {
     var Files = {};

@@ -75,9 +75,13 @@
                 <h4 class="modal-title">上传到Cloud Drive</h4>
             </div>
             <div class="modal-body">
+                <div>
+                    <progress id="progressBar" value="0" max="100"></progress>
+                </div>
                 <input type="button" id="choose-button" value="选择文件" class="btn btn-primary">
-                <input type="file" id="choose-file" class="hidden" />
-                <input type="hidden" id="fileName" />
+
+                <input type="file" id="choose-file" class="hidden"/>
+                <input type="hidden" id="fileName"/>
             </div>
         </div>
     </div>
