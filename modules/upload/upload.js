@@ -54,8 +54,7 @@ module.exports.bind = function (server) {
                 }
                 var filePathAbsolute = path.dirname(filePath);
                 if (!fs.exists(filePathAbsolute)) {
-                    console.log('creating path: ' + filePathAbsolute);
-                    pathUtils.mkdirSync(filePathAbsolute);
+                    pathUtils.mkdirAbsoluteSync(filePathAbsolute);
                 }
                 fs.open(filePath, 'a', 0755, function (err, fd) {
                     if (err)

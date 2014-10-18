@@ -1,15 +1,17 @@
 var path = require('path');
 var fs = require('fs');
 
-module.exports.mkdirSync = function(dirpath, mode) {
-    console.log(dirpath);
-    dirpath.split('\/').reduce(function(pre, cur) {
-        console.log('pre: ' + pre, 'cur: ' + cur);
-        var p = path.join(pre, cur);
-        if(!fs.existsSync(p)) {
-            console.log('creating: ' + p);
-            fs.mkdirSync(p, mode || 0755);
+module.exports.mkdirAbsoluteSync = function (dirPath, mode) {
+    dirPath = dirPath.trim('/');
+    var currentPath = '';
+    var pathParts = dirPath.split('\/');
+    if (pathParts.length >= 2) {
+        for (var i = 1; i < pathParts.length; i++) {
+            currentPath += '/' + pathParts[i];
+            if (!fs.existsSync(currentPath)) {
+                console.log('creating: ' + currentPath);
+                fs.mkdirSync(currentPath, mode || 0755);
+            }
         }
-        return p;
-    }, __dirname);
+    }
 };
