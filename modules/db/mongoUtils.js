@@ -27,13 +27,23 @@ module.exports.saveUserStorage = function(userType, userId, storage, callback){
     });
 };
 
+module.exports.updateUserStorage = function(record, callback){
+    record.save(function(err){
+        if(err)
+            console.log('updating user files error: ' + err);
+
+        if (callback)
+            callback(err);
+    });
+};
+
 module.exports.findUserStorage = function (userType, userId, callback) {
-    userStorageModel.findOne({userType: userType, userId: userId}, function (err, storage) {
+    userStorageModel.findOne({userType: userType, userId: userId}, function (err, record) {
         if(err)
             console.log('finding user files error: ' + err);
 
         if (callback)
-            callback(err, storage);
+            callback(err, record);
     });
 };
 

@@ -24,9 +24,19 @@
         },
         function (err) {
             if (!err) {
-                mongoUtils.findUserStorage(userType, userId, function(err, storage){
-                    console.log('result:\n', JSON.stringify(storage));
-                    mongoUtils.disconnect();
+                mongoUtils.findUserStorage(userType, userId, function(err, record){
+                    console.log('result:\n', JSON.stringify(record));
+
+                    record.storage.files.splice(0, 1);
+
+                    mongoUtils.updateUserStorage(record, function(err){
+                        mongoUtils.findUserStorage(userType, userId, function(err, record2) {
+                            console.log('result:\n', JSON.stringify(record2));
+
+                            mongoUtils.disconnect();
+                        });
+                    });
+
                 });
             } else {
                 mongoUtils.disconnect();
