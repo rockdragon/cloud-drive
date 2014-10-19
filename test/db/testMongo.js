@@ -12,13 +12,16 @@
                 {
                     name: '1.zip',
                     path: '/users/moye/1.zip',
-                    size: '1.1M'
+                    size: '1.1M',
+                    lastModified: '2014-10-14T10:08:00',
+                    type: 'file'
                 }
             ],
             folders: [
                 {
                     name: 'home',
-                    path: '/users/moye/home'
+                    path: '/users/moye/home',
+                    type: 'folder'
                 }
             ]
         },
