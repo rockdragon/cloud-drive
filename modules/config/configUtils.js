@@ -12,7 +12,7 @@ module.exports.getConfigs = function () {
         if (fs.existsSync(process.env.cloudDriveConfig)) {
             var contents = fs.readFileSync(process.env.cloudDriveConfig, {encoding: 'utf-8'});
             cache[cfgFileName] = JSON.parse(contents);
-//            console.log('read configuration from ['+ cfgFileName + ']:' + contents);
+//            console.logger('read configuration from ['+ cfgFileName + ']:' + contents);
         }
     }
     return cache[cfgFileName];
