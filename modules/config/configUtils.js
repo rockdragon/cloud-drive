@@ -4,7 +4,7 @@ var path = require('path');
 var cfgFileName = 'config.cfg';
 var cache = {};
 
-module.exports.getConfigs = function () {
+function getConfigs() {
     if (!cache[cfgFileName]) {
         if (!process.env.cloudDriveConfig) {
             process.env.cloudDriveConfig = path.join(process.cwd(), cfgFileName);
@@ -12,14 +12,14 @@ module.exports.getConfigs = function () {
         if (fs.existsSync(process.env.cloudDriveConfig)) {
             var contents = fs.readFileSync(process.env.cloudDriveConfig, {encoding: 'utf-8'});
             cache[cfgFileName] = JSON.parse(contents);
-//            console.logger('read configuration from ['+ cfgFileName + ']:' + contents);
         }
     }
     return cache[cfgFileName];
-};
+}
+module.exports.getConfigs = getConfigs;
 
 module.exports.isDevelopment = function(){
-    return process.env.NODE_ENV  === 'development';
+    return getConfigs().node_env  === 'development';
 };
 
 module.exports.getUploadRoot = function(){

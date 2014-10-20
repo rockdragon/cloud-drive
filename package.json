@@ -22,6 +22,7 @@
         "passport-facebook": "*",
         "formidable": "*",
         "sticky-session": "*",
-        "socket.io": "*"
+        "socket.io": "*",
+        "rx": "*"
     }
 }
