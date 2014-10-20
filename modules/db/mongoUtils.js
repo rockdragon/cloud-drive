@@ -1,5 +1,17 @@
 var mongoose = require('mongoose');
 
+mongoose.connect('mongodb://localhost/cloud-drive');
+mongoose.connection.on('error', function (err) {
+    console.log('Mongo connection occurs error: ' + err);
+});
+
+/*
+    only for test-case caller
+ */
+module.exports.disconnect = function(){
+  mongoose.disconnect();
+};
+
 var userStorageModel = mongoose.model('userStorage', mongoose.Schema({
     userType: String,
     userId: String,
@@ -8,13 +20,6 @@ var userStorageModel = mongoose.model('userStorage', mongoose.Schema({
         files: Array
     }
 }));
-
-module.exports.connect = function () {
-    mongoose.connect('mongodb://localhost/cloud-drive');
-};
-module.exports.disconnect = function () {
-    mongoose.disconnect();
-};
 
 module.exports.saveUserStorage = function(userType, userId, storage, callback){
     var record = new userStorageModel({userType: userType, userId: userId, storage: storage});

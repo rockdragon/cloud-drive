@@ -1,8 +1,6 @@
 (function () {
     var mongoUtils = require('../../modules/db/mongoUtils');
 
-    mongoUtils.connect();
-
     var userType = 'development';
     var userId = '12345678';
 
@@ -42,7 +40,6 @@
 
                 });
             } else {
-                mongoUtils.disconnect();
             }
         });
 })();
