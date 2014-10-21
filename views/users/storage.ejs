@@ -1,0 +1,27 @@
+<table id="storageTable" cellspacing="0" width="100%">
+    <% if (storage){ %>
+    <thead>
+    <tr>
+        <th>Name</th>
+        <th>Kind</th>
+        <th>Modified</th>
+    </tr>
+    </thead>
+    <% for(var i = 0, len = storage.folders.length; i < len; i++) { %>
+    <tr>
+        <td>storage.folders[i].name</td>
+        <td>folder</td>
+        <td>--</td>
+    </tr>
+    <% } %>
+    <% for(var j = 0, len2 = storage.files.length; j < len2; j++) { %>
+    <tr>
+        <td>storage.files[j].name</td>
+        <td>{%= storage.files[j]mime %}
+            <gray>{%= storage.files[j].suffix %}</gray>
+        </td>
+        <td>{%= storage.files[j].modified %}</td>
+    </tr>
+    <% } %>
+    <% } %>
+</table>

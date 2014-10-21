@@ -7,12 +7,18 @@
             {
                 name: '1.zip',
                 path: '/users/moye/1.zip',
-                size: '1.1M'
+                size: '1.1M',
+                suffix: 'zip',
+                mime: 'zip',
+                modified: '2011/04/25 11:20AM'
             },
             {
                 name: '2.zip',
                 path: '/users/moye/2.zip',
-                size: '2.1M'
+                size: '2.1M',
+                suffix: 'zip',
+                mime: 'zip',
+                modified: '2011/04/25 10:00PM'
             }
         ],
         folders: [

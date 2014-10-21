@@ -23,6 +23,8 @@
         "formidable": "*",
         "sticky-session": "*",
         "socket.io": "*",
-        "rx": "*"
+        "rx": "*",
+        "mime": "*",
+        "moment": "*"
     }
 }
