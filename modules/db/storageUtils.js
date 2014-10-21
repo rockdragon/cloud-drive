@@ -1,5 +1,7 @@
 var mongoUtils = require('./mongoUtils');
 var userUtils = require('../auth/userUtils');
+var mime = require('mime');
+var moment = require('moment');
 
 var Rx = require('rx');
 
@@ -119,4 +121,35 @@ module.exports.addFolder = function (session, req, parentRoute, folderName, call
         }, errorOccurs);
 };
 
+/*
+ add a file to user's storage
+ @parentRoute(etc.): home/second
+ @file: a file object {
+     name: '2.zip',
+     path: '/users/moye/2.zip',
+     size: '2.1M',
+     suffix: 'zip',
+ }
+ */
+module.exports.addFolder = function (session, req, parentRoute, file, callback) {
+    var getStorageRecordWrapper = Rx.Observable.fromNodeCallback(getStorageRecord);
+    var getStorageRecordSync = getStorageRecordWrapper(session, req);
+    getStorageRecordSync.subscribe(
+        function (record) {
+            if (record) {
+                var storage = record.storage;
+                var parentFolder = findParent(storage.folders, parentRoute);
+                if (parentFolder) {
+                    file.mime = mime.lookup(file.name);
+                    file.modified = moment().format("M/D/YYYY h:mm A");
+                    parentFolder.files = parentFolder.files || [];
+                    parentFolder.files.push(file);
+
+                    saveStorage(session, req, storage, function(err){
+                        callback(err);
+                    });
+                }
+            }
+        }, errorOccurs);
+};
 
