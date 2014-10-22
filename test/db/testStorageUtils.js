@@ -8,16 +8,14 @@
                 name: '1.zip',
                 path: '/users/moye/1.zip',
                 size: '1.1M',
-                suffix: 'zip',
-                mime: 'zip',
+                mime: { t:'Archive', i:'s_web_page_white_compressed_32'},
                 modified: '2011/04/25 11:20AM'
             },
             {
                 name: '2.zip',
                 path: '/users/moye/2.zip',
                 size: '2.1M',
-                suffix: 'zip',
-                mime: 'zip',
+                mime: { t:'Archive', i:'s_web_page_white_compressed_32'},
                 modified: '2011/04/25 10:00PM'
             }
         ],

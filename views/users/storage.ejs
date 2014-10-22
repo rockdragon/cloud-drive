@@ -8,14 +8,17 @@
     </tr>
     </thead>
     <% for(var i = 0, len = storage.folders.length; i < len; i++) { %>
-    <tr class="info">
-        <td><%= storage.folders[i].name %></td>
+    <tr>
+        <td class="filename-col">
+            <img class="sprite sprite_web s_web_folder_32 icon" alt="APP" draggable="true" src="/images/icon_spacer.gif">
+            <a href="#"><%= storage.folders[i].name %></a>
+        </td>
         <td>folder</td>
         <td>--</td>
     </tr>
     <% } %>
     <% for(var j = 0, len2 = storage.files.length; j < len2; j++) { %>
-    <tr class="info">
+    <tr>
         <td><%= storage.files[j].name %></td>
         <td><%= storage.files[j].mime %>
             <gray><%= storage.files[j].suffix %></gray>

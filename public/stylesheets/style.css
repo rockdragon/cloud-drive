@@ -7714,7 +7714,60 @@ ul.horizontal li {
     margin-left:10px;
     height:30px;
 }
-
+.s_web_folder_32 {
+    background-position: left -686px;
+}
+/* mime types begin */
+.s_web_page_white_acrobat_32 {
+    background-position: left -1434px;
+}
+.s_web_page_white_word_32{
+    background-position: left -2352px;
+}
+.s_web_page_white_powerpoint_32{
+    background-position: left -2080px;
+}
+.s_web_page_white_compressed_32 {;
+    background-position: left -1570px;
+}
+.s_web_page_white_code_32{
+    background-position: left -1502px;
+}
+.s_web_page_white_text_32{
+    background-position: left -2216px;
+}
+.s_web_page_white_film_32{
+    background-position: left -1774px;
+}
+.s_web_page_white_sound_32{
+    background-position: left -2148px;
+}
+.s_web_page_white_picture_32{
+    background-position: left -2012px;
+}
+.s_web_page_white_32{
+    background-position: left -1400px;
+}
+/* mime types end */
+.filename-col img.icon{
+    float: left;
+    width: 32px;
+    height: 32px;
+    margin-top: -8px;
+    margin-right: 11px;
+    margin-left: -1px;
+    display: block;
+    overflow: hidden;
+    background-color: transparent;
+    vertical-align: bottom;
+    border: 1px solid transparent;
+    cursor: pointer;
+}
+.filename-col a{
+    color: #3d464d;
+    font-size: 13px;
+    white-space: pre;
+}
 /* uploader */
 #uploader{
     position: fixed;

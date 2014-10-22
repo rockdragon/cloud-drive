@@ -1,6 +1,6 @@
 var mongoUtils = require('./mongoUtils');
 var userUtils = require('../auth/userUtils');
-var mime = require('mime');
+var mimeUtils = require('../mime/mimeUtils');
 var moment = require('moment');
 
 var Rx = require('rx');
@@ -131,7 +131,7 @@ module.exports.addFolder = function (session, req, parentRoute, folderName, call
      suffix: 'zip',
  }
  */
-module.exports.addFolder = function (session, req, parentRoute, file, callback) {
+module.exports.addFile = function (session, req, parentRoute, file, callback) {
     var getStorageRecordWrapper = Rx.Observable.fromNodeCallback(getStorageRecord);
     var getStorageRecordSync = getStorageRecordWrapper(session, req);
     getStorageRecordSync.subscribe(
@@ -140,7 +140,7 @@ module.exports.addFolder = function (session, req, parentRoute, file, callback) 
                 var storage = record.storage;
                 var parentFolder = findParent(storage.folders, parentRoute);
                 if (parentFolder) {
-                    file.mime = mime.lookup(file.name);
+                    file.mime = mimeUtils.lookup(file.name);
                     file.modified = moment().format("M/D/YYYY h:mm A");
                     parentFolder.files = parentFolder.files || [];
                     parentFolder.files.push(file);
