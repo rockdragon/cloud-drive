@@ -2,7 +2,7 @@
 <div class="container">
     <div class="page-header" id="banner">
         <div class="row">
-            <div class="col-lg-8 col-md-7 col-sm-6">
+            <div class="col-lg-4">
                 <h1><%= title %></h1>
 
                 <% if (user){ %>
@@ -11,6 +11,9 @@
                         <dd><img src="<%= user.avatar %>" /></dd>
                     </dl>
                 <% } %>
+            </div>
+            <div class="col-lg-8 col-md-7 col-sm-6">
+                <% include storage %>
             </div>
         </div>
     </div>
