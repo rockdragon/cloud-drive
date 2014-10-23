@@ -2,7 +2,8 @@
     angular.module('storageApp', []).
         controller('storageController', ['$scope', function ($scope) {
             $scope.navigate = function () {
-                console.log('clicked.');
+                var storageModel = JSON.parse($("#storageData").val());
+                console.log(storageModel.folders.length);
             }
         }]);
 
