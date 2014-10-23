@@ -10,8 +10,7 @@
     <% for(var i = 0, len = storage.folders.length; i < len; i++) { %>
     <tr>
         <td class="filename-col">
-            <img class="sprite sprite_web s_web_folder_32 icon" alt="APP" draggable="true"
-                 src="/images/icon_spacer.gif">
+            <img class="sprite sprite_web s_web_folder_32 icon" alt="<%= storage.folders[i].name %>" src="/images/icon_spacer.gif">
             <a href="#"><%= storage.folders[i].name %></a>
         </td>
         <td>folder</td>
@@ -21,8 +20,7 @@
     <% for(var j = 0, len2 = storage.files.length; j < len2; j++) { %>
     <tr>
         <td class="filename-col">
-            <img class="sprite sprite_web <%= storage.files[i].mime.i %> icon" alt="APP" draggable="true"
-                 src="/images/icon_spacer.gif">
+            <img class="sprite sprite_web <%= storage.files[i].mime.i %> icon" alt="<%= storage.files[i].name %>" src="/images/icon_spacer.gif">
             <a href="#"><%= storage.files[i].name %></a>
         </td>
         <td><%= storage.files[i].mime.t %></td>

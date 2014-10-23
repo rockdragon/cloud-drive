@@ -11,7 +11,7 @@ module.exports.bind = function (server) {
         socket.send((new Date()).getTime());
     };
 
-    var onCompleted = function () {
+    var onCompleted = function (parent, name, filePath, size) {
 
     };
 
@@ -29,6 +29,7 @@ module.exports.bind = function (server) {
             var name = data.Name;
             var size = data.Size;
             var sessionId = data.SessionId;
+            var currentPath = data.CurrentPath;
             console.log('[start] received start event: %s, size: %d, session: %s', name, size, sessionId);
 
             //combine path
@@ -38,7 +39,8 @@ module.exports.bind = function (server) {
                     data: '',
                     downloaded: 0,
                     handler: null,
-                    filePath: path.join(userRootPath, name)
+                    filePath: path.join(userRootPath, name),
+                    parent: currentPath
                 };
                 Files[name].getPercent = function () {
                     return parseInt((this.downloaded / this.fileSize) * 100);
@@ -83,6 +85,9 @@ module.exports.bind = function (server) {
                 fs.write(Files[name].handler, Files[name].data, null, 'Binary', function (err, written) {
                     if (err)
                         console.log('[upload] file write error: ' + err.toString());
+                    //uploading completed
+                    onCompleted(Files[name].parent, name, Files[name].filePath, Files[name].fileSize);
+
                     delete Files[name];
                     socket.emit('done', {name: name});
                 });
