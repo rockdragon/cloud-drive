@@ -1,9 +1,10 @@
 (function () {
-    function storageController($scope) {
-        $scope.navigate = function () {
-            console.log('clicked.');
-        }
-    }
+    angular.module('storageApp', []).
+        controller('storageController', ['$scope', function ($scope) {
+            $scope.navigate = function () {
+                console.log('clicked.');
+            }
+        }]);
 
 
     $('#upload_button').click(function () {
