@@ -11,17 +11,15 @@ var storage = {
             name: '1.zip',
             path: '/users/moye/1.zip',
             size: '1.1M',
-            suffix: 'zip',
-            mime: 'zip',
-            modified: '2011/04/25 11:20AM'
+            mime: { t:'Archive', i:'s_web_page_white_compressed_32'},
+            modified: '2011/04/25 11:20 AM'
         },
         {
             name: '2.zip',
             path: '/users/moye/2.zip',
             size: '2.1M',
-            suffix: 'zip',
-            mime: 'zip',
-            modified: '2011/04/25 10:00PM'
+            mime: { t:'Archive', i:'s_web_page_white_compressed_32'},
+            modified: '2011/04/25 10:00 PM'
         }
     ],
     folders: [
@@ -53,9 +51,9 @@ router.route('/').get(function (req, res) {
             user = JSON.parse(reply);
         }
         if(user)
-            res.render('users/user_index', {title: 'Cloud-drive.', user: user, storage: storage});
+            res.render('users/user_index', {title: 'Welcome.', user: user, storage: storage});
         else
-            res.render('index', {title: 'Cloud-drive.', user: user, storage: storage});
+            res.render('index', {title: 'Welcome.', user: user, storage: storage});
     });
 });
 
