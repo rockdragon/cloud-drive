@@ -1,4 +1,11 @@
 (function () {
+    function storageController($scope) {
+        $scope.navigate = function () {
+            console.log('clicked.');
+        }
+    }
+
+
     $('#upload_button').click(function () {
         $('#uploader').modal();
     });
@@ -14,7 +21,7 @@
     };
 
     // get current path from url
-    var currentPath = function(){
+    var currentPath = function () {
 
     };
 
