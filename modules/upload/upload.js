@@ -11,6 +11,10 @@ module.exports.bind = function (server) {
         socket.send((new Date()).getTime());
     };
 
+    var onCompleted = function () {
+
+    };
+
     io.sockets.on('connection', function (socket) {
         console.log('a client connection established: ' + socket.id);
 
@@ -33,7 +37,8 @@ module.exports.bind = function (server) {
                     fileSize: size,
                     data: '',
                     downloaded: 0,
-                    handler: null
+                    handler: null,
+                    filePath: path.join(userRootPath, name)
                 };
                 Files[name].getPercent = function () {
                     return parseInt((this.downloaded / this.fileSize) * 100);
@@ -43,20 +48,19 @@ module.exports.bind = function (server) {
                 };
                 var position = 0;
                 try {
-                    var filePath = path.join(userRootPath, name);
-                    console.log('[start] sessionId: %s, uploading: %s ...', sessionId, filePath);
-                    var stat = fs.statSync(filePath);
+                    console.log('[start] sessionId: %s, uploading: %s ...', sessionId, Files[name].filePath);
+                    var stat = fs.statSync(Files[name].filePath);
                     if (stat.isFile()) {
                         Files[name].download = stat.size;
                         position = stat.size;
                     }
                 } catch (err) {
                 }
-                var filePathAbsolute = path.dirname(filePath);
-                if (!fs.exists(filePathAbsolute)) {
+                var filePathAbsolute = path.dirname(Files[name].filePath);
+                if (!fs.exists(filePathAbsolute)) { //ensure directory exist
                     pathUtils.mkdirAbsoluteSync(filePathAbsolute);
                 }
-                fs.open(filePath, 'a', 0755, function (err, fd) {
+                fs.open(Files[name].filePath, 'a', 0755, function (err, fd) {
                     if (err)
                         console.log('[start] file open error: ' + err.toString());
                     else {
