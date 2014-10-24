@@ -16,6 +16,9 @@ var userStorageModel = mongoose.model('userStorage', mongoose.Schema({
     userType: String,
     userId: String,
     storage: {
+        name: String,
+        path: String,
+        route: String,
         folders: Array,
         files: Array
     }

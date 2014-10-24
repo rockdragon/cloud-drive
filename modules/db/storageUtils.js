@@ -16,6 +16,25 @@ var errorOccurs = function (err) {
 /*
  add or update a user storage
  */
+function saveStorageByUser(user, storage, callback) {
+        var done = function () {
+            callback(null);
+        };
+        var findUserStorageSync = findUserStorage(user.type, user.userid);
+        findUserStorageSync.subscribe(
+            function (record) {
+                if (record) { // exist record
+                    record.storage = storage;
+                    var updateUserStorageSync = updateUserStorage(record);
+                    updateUserStorageSync.subscribe(done, errorOccurs);
+                } else { // new record
+                    var saveUserStorageSync = saveUserStorage(user.type, user.userid, storage);
+                    saveUserStorageSync.subscribe(done, errorOccurs);
+                }
+            }, errorOccurs);
+}
+module.exports.saveStorageByUser = saveStorageByUser;
+
 function saveStorage(session, req, storage, callback) {
 
     var getUserLogic = function (session, req, storage, callback, next) {
@@ -32,30 +51,21 @@ function saveStorage(session, req, storage, callback) {
         );
     };
 
-    var findUserStorageLogic = function (user, storage, callback) {
-        var done = function () {
-            callback(null);
-        };
-        var findUserStorageSync = findUserStorage(user.type, user.userid);
-        findUserStorageSync.subscribe(
-            function (record) {
-                if (record) { // exist record
-                    record.storage = storage;
-                    var updateUserStorageSync = updateUserStorage(record);
-                    updateUserStorageSync.subscribe(done, errorOccurs);
-                } else { // new record
-                    var saveUserStorageSync = saveUserStorage(user.type, user.userid, storage);
-                    saveUserStorageSync.subscribe(done, errorOccurs);
-                }
-            }, errorOccurs);
-    };
-    getUserLogic(session, req, storage, callback, findUserStorageLogic);
+    getUserLogic(session, req, storage, callback, saveStorageByUser);
 }
 module.exports.saveStorage = saveStorage;
 
 /*
  retrieve a user storage record
  */
+function getStorageRecordByUser(user, callback){
+    var findUserStorageSync = findUserStorage(user.type, user.userid);
+    findUserStorageSync.subscribe(
+        function (record) {
+            callback(null, record);
+        }, errorOccurs);
+};
+module.exports.getStorageRecordByUser = getStorageRecordByUser;
 function getStorageRecord(session, req, callback) {
     var getUserSync = getUser(session, req);
 
@@ -64,11 +74,7 @@ function getStorageRecord(session, req, callback) {
             if (reply) {
                 var user = JSON.parse(reply);
 
-                var findUserStorageSync = findUserStorage(user.type, user.userid);
-                findUserStorageSync.subscribe(
-                    function (record) {
-                        callback(null, record);
-                    }, errorOccurs);
+                getStorageRecordByUser(user, callback);
             } else {
                 callback(new Error('user not found.'), null);
             }

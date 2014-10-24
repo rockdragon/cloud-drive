@@ -41,16 +41,22 @@ module.exports.getUser = getUser;
 /*
  get user upload path
  */
+function getUserRootPathByUser(user) {
+    return path.join(configUtils.getUploadRoot(), user.type, user.userid.toString());
+};
+module.exports.getUserRootPathByUser = getUserRootPathByUser;
+
 function getUserRootPath(sessionId, callback) {
     getUser(sessionUtils, sessionId, function (err, reply) {
-        var uploadPath = '/tmp/';
         if (err)
             console.log(err);
-        if (reply) {
-            var user = JSON.parse(reply);
-            uploadPath = path.join(configUtils.getUploadRoot(), user.type, user.userid.toString());
-        }
+        var uploadPath = '/tmp/';
+        var user = JSON.parse(reply);
+        if(user)
+            uploadPath = getUserRootPathByUser(user);
         callback(err, uploadPath);
     });
 };
 module.exports.getUserRootPath = getUserRootPath;
+
+

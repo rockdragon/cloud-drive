@@ -3,46 +3,7 @@ var router = express.Router();
 
 var session = require('../modules/sessions/sessionUtils');
 var userUtils = require('../modules/auth/userUtils');
-
-//mock up
-var storage = {
-    name: 'root',
-    path: '/users/moye/',
-    route: '/',
-    files: [
-        {
-            name: '1.zip',
-            path: '/users/moye/1.zip',
-            size: '1.1M',
-            mime: { t:'Archive', i:'s_web_page_white_compressed_32'},
-            modified: '2011/04/25 11:20 AM'
-        },
-        {
-            name: '2.zip',
-            path: '/users/moye/2.zip',
-            size: '2.1M',
-            mime: { t:'Archive', i:'s_web_page_white_compressed_32'},
-            modified: '2011/04/25 10:00 PM'
-        }
-    ],
-    folders: [
-        {
-            name: 'home',
-            path: '/users/moye/home',
-            route: 'home',
-            folders:[
-                {
-                    name: 'second',
-                    path: '/users/moye/home/second',
-                    route: 'home/second',
-                    folders: [],
-                    files: []
-                }
-            ],
-            files: []
-        }
-    ]
-};
+var storageUtils = require('../modules/db/storageUtils');
 
 /* GET home page. */
 router.route('/').get(function (req, res) {
@@ -53,10 +14,28 @@ router.route('/').get(function (req, res) {
         if (reply) {
             user = JSON.parse(reply);
         }
-        if(user)
-            res.render('users/user_index', {title: 'Welcome.', user: user, storage: storage});
+        if(user) {
+            storageUtils.getStorageRecordByUser(user, function(err, record){
+                if(storage)
+                    res.render('users/user_index', {title: 'Welcome.', user: user, storage: record.storage});
+                else{
+                    console.log('create user storage record.');
+                    var storage = {
+                        name: 'root',
+                        path: userUtils.getUserRootPathByUser(user),
+                        route: '/',
+                        files: [],
+                        folders: []
+                    };
+                    console.log(JSON.stringify(storage));
+                    storageUtils.saveStorageByUser(user, storage, function(err){
+                        res.render('users/user_index', {title: 'Welcome.', user: user, storage: storage});
+                    })
+                }
+            });
+        }
         else
-            res.render('index', {title: 'Welcome.', user: user, storage: storage});
+            res.redirect('/login');
     });
 });
 

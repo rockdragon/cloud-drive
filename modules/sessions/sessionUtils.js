@@ -135,3 +135,7 @@ module.exports.deleteById = function (id, name, callback) {
         callback();
     }
 };
+
+module.exports.getSessionId = function(req){
+    return req.cookies[config.getConfigs().session_key];
+};
