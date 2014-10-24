@@ -2,9 +2,11 @@
     angular.module('storageApp', []).
         controller('storageController', ['$scope', function ($scope) {
             $scope.binding = function(current){
+                $('#currentPath').val(current.route);
                 $scope.folders = current.folders;
                 $scope.files = current.files;
             };
+
             $scope.storageModel = JSON.parse($('#storageData').val());
             $scope.binding($scope.storageModel);
 
@@ -29,7 +31,7 @@
 
     // get current path from url
     var currentPath = function () {
-
+        return $('#currentPath').val();
     };
 
     //HTML File detection

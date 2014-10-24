@@ -6,6 +6,9 @@ var userUtils = require('../modules/auth/userUtils');
 
 //mock up
 var storage = {
+    name: 'root',
+    path: '/users/moye/',
+    route: '/',
     files: [
         {
             name: '1.zip',
