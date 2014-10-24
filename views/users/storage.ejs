@@ -1,5 +1,5 @@
 <div ng-app="storageApp">
-    <table id="storageTable" class="table table-striped table-hover" ng-controller="storageController" style="display: none;">
+    <table ng-controller="storageController" id="storageTable" class="table table-striped table-hover" style="display: none;">
         <thead>
         <tr>
             <th>Name</th>
@@ -12,7 +12,7 @@
             <td class="filename-col">
                 <img class="sprite sprite_web s_web_folder_32 icon"
                      src="/images/icon_spacer.gif">
-                <a ng-click="navigate()">{{ folder.name }}</a>
+                <a ng-click="navigate($index)">{{ folder.name }}</a>
             </td>
             <td>folder</td>
             <td>--</td>

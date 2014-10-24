@@ -1,14 +1,17 @@
 (function () {
     angular.module('storageApp', []).
         controller('storageController', ['$scope', function ($scope) {
-            var storageModel = JSON.parse($('#storageData').val());
-            $scope.folders = storageModel.folders;
-            $scope.files = storageModel.files;
-            $scope.navigate = function () {
-                console.log(storageModel.folders.length);
+            $scope.binding = function(current){
+                $scope.folders = current.folders;
+                $scope.files = current.files;
+            };
+            $scope.storageModel = JSON.parse($('#storageData').val());
+            $scope.binding($scope.storageModel);
+
+            $scope.navigate = function (index) {
+                $scope.binding($scope.folders[index]);
             }
         }]);
-
 
     $('#upload_button').click(function () {
         $('#uploader').modal();
