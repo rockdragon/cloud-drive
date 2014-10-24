@@ -1,8 +1,10 @@
 (function () {
     angular.module('storageApp', []).
         controller('storageController', ['$scope', function ($scope) {
+            var storageModel = JSON.parse($('#storageData').val());
+            $scope.folders = storageModel.folders;
+            $scope.files = storageModel.files;
             $scope.navigate = function () {
-                var storageModel = JSON.parse($("#storageData").val());
                 console.log(storageModel.folders.length);
             }
         }]);
@@ -31,6 +33,8 @@
     window.addEventListener('load', ready);
 
     function ready() {
+        $('#storageTable').show();
+
         if (window.File && window.FileReader) {
             var socket = socketClient();
 

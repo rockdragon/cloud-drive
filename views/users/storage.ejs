@@ -1,6 +1,5 @@
 <div ng-app="storageApp">
-    <table id="storageTable" class="table table-striped table-hover" ng-controller='storageController'>
-        <% if (storage){ %>
+    <table id="storageTable" class="table table-striped table-hover" ng-controller="storageController" style="display: none;">
         <thead>
         <tr>
             <th>Name</th>
@@ -8,29 +7,28 @@
             <th>Modified</th>
         </tr>
         </thead>
-        <% for(var i = 0, len = storage.folders.length; i < len; i++) { %>
-        <tr>
+
+        <tr ng-repeat="folder in folders">
             <td class="filename-col">
-                <img class="sprite sprite_web s_web_folder_32 icon" alt="<%= storage.folders[i].name %>"
+                <img class="sprite sprite_web s_web_folder_32 icon"
                      src="/images/icon_spacer.gif">
-                <a ng-click="navigate()"><%= storage.folders[i].name %></a>
+                <a ng-click="navigate()">{{ folder.name }}</a>
             </td>
             <td>folder</td>
             <td>--</td>
         </tr>
-        <% } %>
-        <% for(var j = 0, len2 = storage.files.length; j < len2; j++) { %>
-        <tr>
+
+        <tr ng-repeat="file in files">
             <td class="filename-col">
-                <img class="sprite sprite_web <%= storage.files[i].mime.i %> icon" alt="<%= storage.files[i].name %>"
+                <img class="sprite sprite_web {{ file.mime.i }} icon" alt="{{ file.name }}"
                      src="/images/icon_spacer.gif">
-                <a href="#"><%= storage.files[i].name %></a>
+                <a href="#">{{ file.name }}</a>
             </td>
-            <td><%= storage.files[i].mime.t %></td>
-            <td><%= storage.files[j].modified %></td>
+            <td>{{ file.mime.t }}</td>
+            <td>{{ file.modified }}</td>
         </tr>
-        <% } %>
-        <% } %>
+        <% if (storage){ %>
         <input id="storageData" type="hidden" value="<%= JSON.stringify(storage) %>" />
+        <% } %>
     </table>
 </div>
