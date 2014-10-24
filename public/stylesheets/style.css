@@ -7659,11 +7659,11 @@ button.close {
 }
 
 /* drive buttons */
-#global-actions {
-    float: right;
+#path-actions, #global-actions {
     margin-top: 20px;
     margin-right: 10px;
 }
+#global-actions{float: right;}
 ul.horizontal {
     list-style: none;
     margin: 0;
@@ -7675,6 +7675,7 @@ ul.horizontal {
 }
 ul.horizontal li {
     display: inline;
+    font-size:12px;
 }
 #global-actions .action label {
     display: inline-block;
@@ -7763,7 +7764,8 @@ ul.horizontal li {
     border: 1px solid transparent;
     cursor: pointer;
 }
-.filename-col a{
+.filename-col a, #path-actions a
+{
     cursor:pointer;
     color: #3d464d;
     font-size: 13px;

@@ -9,60 +9,75 @@
 <body>
 <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
-        <div class="navbar-header">
-            <a href="/" class="navbar-brand">Cloud-Driver</a>
-            <!--<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">-->
-            <!--<span class="icon-bar"></span>-->
-            <!--<span class="icon-bar"></span>-->
-            <!--<span class="icon-bar"></span>-->
-            <!--</button>-->
-        </div>
-        <div class="navbar-collapse collapse" id="navbar-main">
-            <ul class="nav navbar-nav">
-                <li class="dropdown">
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes"><%= user.name %> <span
-                                class="caret"></span></a>
-                    <ul class="dropdown-menu" aria-labelledby="themes">
-                        <li><a href="#">设置</a></li>
-                        <li class="divider"></li>
-                        <li><a href="#">注销</a></li>
-                    </ul>
-                </li>
-            </ul>
-
-            <ul class="nav navbar-nav navbar-right">
-                <li>
-                    <div id="global-actions">
-                        <ul class="horizontal">
-                            <li class="action">
-                                <label for="upload_button">
-                                    <a id="upload_button" name="action" data-value="upload"
-                                       data-title="上传…">
-                                        <img alt="上传…" src="/images/icon_spacer.gif"
-                                             class="sprite sprite_web s_web_upload_16">
-                                    </a>
-                                </label>
-                            </li>
-                            <li class="action">
-                                <label for="new_folder_button">
-                                    <a id="new_folder_button" name="action" data-value="upload"
-                                       data-title="新的文件夹">
-                                        <img alt="新的文件夹" src="/images/icon_spacer.gif"
-                                             class="sprite sprite_web s_web_folder_add">
-                                    </a>
-                                </label>
-                            </li>
-                            <li class="action">
-                                <form class="s_web_search">
-                                    <input type="text" class="form-control col-lg-10" placeholder="搜索">
-                                </form>
-                            </li>
+        <div class="col-lg-4">
+            <div class="navbar-header">
+                <a href="/" class="navbar-brand">Cloud-Driver</a>
+                <!--<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">-->
+                <!--<span class="icon-bar"></span>-->
+                <!--<span class="icon-bar"></span>-->
+                <!--<span class="icon-bar"></span>-->
+                <!--</button>-->
+            </div>
+            <div id="navbar-main">
+                <ul class="nav navbar-nav">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes"><%= user.name %> <span
+                                    class="caret"></span></a>
+                        <ul class="dropdown-menu" aria-labelledby="themes">
+                            <li><a href="#">设置</a></li>
+                            <li class="divider"></li>
+                            <li><a href="#">注销</a></li>
                         </ul>
-                    </div>
-                </li>
+                    </li>
+                </ul>
+            </div>
+        </div>
+        <div class="col-lg-8 col-md-7 col-sm-6">
+            <div class="navbar-collapse collapse">
+                <div class="nav navbar-nav" id="path-actions">
+                    <ul class="horizontal">
+                        <li class="action">
+                            <a id="path-link">home</a>
+                        </li>
+                        <li>/</li>
+                        <li>
+                            <a id="path-link">local</a>
+                        </li>
+                    </ul>
+                </div>
+                <ul class="nav navbar-nav navbar-right">
+                    <li>
+                        <div id="global-actions">
+                            <ul class="horizontal">
+                                <li class="action">
+                                    <label for="upload_button">
+                                        <a id="upload_button" name="action" data-value="upload"
+                                           data-title="上传…">
+                                            <img alt="上传…" src="/images/icon_spacer.gif"
+                                                 class="sprite sprite_web s_web_upload_16">
+                                        </a>
+                                    </label>
+                                </li>
+                                <li class="action">
+                                    <label for="new_folder_button">
+                                        <a id="new_folder_button" name="action" data-value="upload"
+                                           data-title="新的文件夹">
+                                            <img alt="新的文件夹" src="/images/icon_spacer.gif"
+                                                 class="sprite sprite_web s_web_folder_add">
+                                        </a>
+                                    </label>
+                                </li>
+                                <li class="action">
+                                    <form class="s_web_search">
+                                        <input type="text" class="form-control col-lg-10" placeholder="搜索">
+                                    </form>
+                                </li>
+                            </ul>
+                        </div>
+                    </li>
 
-            </ul>
-
+                </ul>
+            </div>
         </div>
     </div>
 </div>

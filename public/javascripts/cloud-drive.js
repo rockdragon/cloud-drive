@@ -2,7 +2,7 @@
     angular.module('storageApp', []).
         controller('storageController', ['$scope', function ($scope) {
             $scope.binding = function(current){
-                $('#currentPath').val(current.route);
+                $scope.storageModel.currentPath = current.route;
                 $scope.folders = current.folders;
                 $scope.files = current.files;
             };
