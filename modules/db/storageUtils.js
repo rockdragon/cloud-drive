@@ -6,6 +6,7 @@ var moment = require('moment');
 var Rx = require('rx');
 
 var getUser = Rx.Observable.fromNodeCallback(userUtils.getUser);
+var getUserById = Rx.Observable.fromNodeCallback(userUtils.getUserById);
 var findUserStorage = Rx.Observable.fromNodeCallback(mongoUtils.findUserStorage);
 var updateUserStorage = Rx.Observable.fromNodeCallback(mongoUtils.updateUserStorage);
 var saveUserStorage = Rx.Observable.fromNodeCallback(mongoUtils.saveUserStorage);
@@ -17,21 +18,21 @@ var errorOccurs = function (err) {
  add or update a user storage
  */
 function saveStorageByUser(user, storage, callback) {
-        var done = function () {
-            callback(null);
-        };
-        var findUserStorageSync = findUserStorage(user.type, user.userid);
-        findUserStorageSync.subscribe(
-            function (record) {
-                if (record) { // exist record
-                    record.storage = storage;
-                    var updateUserStorageSync = updateUserStorage(record);
-                    updateUserStorageSync.subscribe(done, errorOccurs);
-                } else { // new record
-                    var saveUserStorageSync = saveUserStorage(user.type, user.userid, storage);
-                    saveUserStorageSync.subscribe(done, errorOccurs);
-                }
-            }, errorOccurs);
+    var done = function () {
+        callback(null);
+    };
+    var findUserStorageSync = findUserStorage(user.type, user.userid);
+    findUserStorageSync.subscribe(
+        function (record) {
+            if (record) { // exist record
+                record.storage = storage;
+                var updateUserStorageSync = updateUserStorage(record);
+                updateUserStorageSync.subscribe(done, errorOccurs);
+            } else { // new record
+                var saveUserStorageSync = saveUserStorage(user.type, user.userid, storage);
+                saveUserStorageSync.subscribe(done, errorOccurs);
+            }
+        }, errorOccurs);
 }
 module.exports.saveStorageByUser = saveStorageByUser;
 
@@ -58,7 +59,7 @@ module.exports.saveStorage = saveStorage;
 /*
  retrieve a user storage record
  */
-function getStorageRecordByUser(user, callback){
+function getStorageRecordByUser(user, callback) {
     var findUserStorageSync = findUserStorage(user.type, user.userid);
     findUserStorageSync.subscribe(
         function (record) {
@@ -119,7 +120,7 @@ module.exports.addFolder = function (session, req, parentRoute, folderName, call
                         files: []
                     });
 
-                    saveStorage(session, req, storage, function(err){
+                    saveStorage(session, req, storage, function (err) {
                         callback(err);
                     });
                 }
@@ -131,12 +132,37 @@ module.exports.addFolder = function (session, req, parentRoute, folderName, call
  add a file to user's storage
  @parentRoute(etc.): home/second
  @file: a file object {
-     name: '2.zip',
-     path: '/users/moye/2.zip',
-     size: '2.1M',
-     suffix: 'zip',
+ name: '2.zip',
+ path: '/users/moye/2.zip',
+ size: '2.1M',
+ suffix: 'zip',
  }
  */
+function addFileBySessionId(session, id, parentRoute, file, callback) {
+    var getUserByIdWrapper = Rx.Observable.fromNodeCallback(getUserById);
+    var getUserByIdAsync = getUserByIdWrapper(session, id);
+    getUserByIdAsync.subscribe(function (reply) {
+        if (reply) {
+            var user = JSON.parse(reply);
+            getStorageRecordByUser(user, function (record) {
+                var storage = record.storage;
+                var parentFolder = findParent(storage.folders, parentRoute);
+                if (parentFolder) {
+                    file.mime = mimeUtils.lookup(file.name);
+                    file.modified = moment().format("M/D/YYYY h:mm A");
+                    parentFolder.files = parentFolder.files || [];
+                    parentFolder.files.push(file);
+
+                    saveStorageByUser(user, storage, function (err) {
+                        callback(err);
+                    });
+                }
+            });
+        }
+    }, errorOccurs);
+}
+module.exports.addFileBySessionId = addFileBySessionId;
+
 module.exports.addFile = function (session, req, parentRoute, file, callback) {
     var getStorageRecordWrapper = Rx.Observable.fromNodeCallback(getStorageRecord);
     var getStorageRecordSync = getStorageRecordWrapper(session, req);
@@ -151,7 +177,7 @@ module.exports.addFile = function (session, req, parentRoute, file, callback) {
                     parentFolder.files = parentFolder.files || [];
                     parentFolder.files.push(file);
 
-                    saveStorage(session, req, storage, function(err){
+                    saveStorage(session, req, storage, function (err) {
                         callback(err);
                     });
                 }

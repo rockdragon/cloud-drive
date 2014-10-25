@@ -2,6 +2,10 @@ var fs = require('fs');
 var path = require('path');
 var userUtils = require('../auth/userUtils');
 var pathUtils = require('./pathUtils');
+var storageUtils = require('../db/storageUtils');
+var session = require('../sessions/sessionUtils');
+var moment = require('moment');
+var mimeUtils = require('../mime/mimeUtils');
 
 module.exports.bind = function (server) {
     var Files = {};
@@ -11,8 +15,19 @@ module.exports.bind = function (server) {
         socket.send((new Date()).getTime());
     };
 
-    var onCompleted = function (parent, name, filePath, size) {
-
+    var onCompleted = function (sessionId, parent, name, filePath, size) {
+        var mimeInfo = mimeUtils.lookup(name);
+        var file = {
+            name: name,
+            path: filePath,
+            size: size,
+            mime: { t: mimeInfo.t, i: mimeInfo.i},
+            modified: moment().format("M/D/YYYY h:mm A")
+        };
+        storageUtils.addFileBySessionId(session, sessionId, parent, file, function(err){
+            if(err)
+                console.log('error on add file: ' + err + ', ' + JSON.stringify(file));
+        });
     };
 
     io.sockets.on('connection', function (socket) {
@@ -40,7 +55,8 @@ module.exports.bind = function (server) {
                     downloaded: 0,
                     handler: null,
                     filePath: path.join(userRootPath, name),
-                    parent: currentPath
+                    parent: currentPath,
+                    sessionId: sessionId
                 };
                 Files[name].getPercent = function () {
                     return parseInt((this.downloaded / this.fileSize) * 100);
@@ -86,7 +102,7 @@ module.exports.bind = function (server) {
                     if (err)
                         console.log('[upload] file write error: ' + err.toString());
                     //uploading completed
-                    onCompleted(Files[name].parent, name, Files[name].filePath, Files[name].fileSize);
+                    onCompleted(Files[name].sessionId, Files[name].parent, name, Files[name].filePath, Files[name].fileSize);
 
                     delete Files[name];
                     socket.emit('done', {name: name});

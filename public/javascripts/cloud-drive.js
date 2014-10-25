@@ -46,14 +46,18 @@
         };
     }]);
 
+    // provide Angular scope for external caller.
+    var getAngularScope = function () {
+        var appElement = document.querySelector('[ng-controller="storageController"]');
+        return angular.element(appElement).scope();
+    };
+
     $('#upload_button').click(function () {
         $('#uploader').modal();
     });
 
     $('#new_folder_button').click(function () {
-        var appElement = document.querySelector('[ng-controller="storageController"]');
-        var $scope = angular.element(appElement).scope();
-
+        var $scope = getAngularScope();
         $scope.addFolder({
             name: 'demo',
             path: '/users/moye/demo',

@@ -28,6 +28,6 @@
     </tr>
     <% if (storage){ %>
     <input id="storageData" type="hidden" value="<%= JSON.stringify(storage) %>"/>
-    <input id="currentPath" type="hidden" value="{{ storageModel.currentPath }}"/>
+    <input id="currentPath" type="hidden" value="{{ $scope.model.currentFolder.route }}"/>
     <% } %>
 </table>
