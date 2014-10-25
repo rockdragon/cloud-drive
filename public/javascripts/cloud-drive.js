@@ -1,22 +1,66 @@
 (function () {
-    angular.module('storageApp', []).
-        controller('storageController', ['$scope', function ($scope) {
-            $scope.binding = function(current){
-                $scope.storageModel.currentPath = current.route;
-                $scope.folders = current.folders;
-                $scope.files = current.files;
-            };
+    var storageApp = angular.module('storageApp', []);
 
-            $scope.storageModel = JSON.parse($('#storageData').val());
-            $scope.binding($scope.storageModel);
-
-            $scope.navigate = function (index) {
-                $scope.binding($scope.folders[index]);
+    storageApp.controller('storageController', ['$scope', function ($scope) {
+        $scope.binding = function (currentFolder) {
+            $scope.model.currentFolder = currentFolder;
+            $scope.folders = $scope.model.currentFolder.folders;
+            $scope.files = $scope.model.currentFolder.files;
+        };
+        $scope.findFolder = function (folders, route) {
+            if (folders && folders.length > 0) {
+                for (var j = 0, len2 = folders.length; j < len2; j++) {
+                    if (folders[j].route === route) {
+                        return folders[j];
+                    }
+                    var result = findParent(folders[j].folders, route);
+                    if (result)
+                        return result;
+                }
             }
-        }]);
+            return null;
+        };
+        $scope.bindingWithPath = function (currentPath) {
+            if ($scope.currentFolder.route !== currentPath) {
+                $scope.currentFolder = $scope.findFolder($scope.model.folders, currentPath);
+            }
+            $scope.binding($scope.currentFolder);
+        };
+
+        $scope.model = JSON.parse($('#storageData').val());
+        $scope.binding($scope.model);
+
+        $scope.navigate = function (index) {
+            $scope.binding($scope.folders[index]);
+        };
+
+        var modelChanged = function (oldValue, newValue, scope) {
+            $scope.binding($scope.model.currentFolder);
+        };
+        $scope.$watch($scope.model, modelChanged, true);
+
+        // provide functionality that change model external
+        $scope.addFolder = function (folder) {
+            $scope.model.currentFolder.folders.push(folder);
+            $scope.$apply();
+        };
+    }]);
 
     $('#upload_button').click(function () {
         $('#uploader').modal();
+    });
+
+    $('#new_folder_button').click(function () {
+        var appElement = document.querySelector('[ng-controller="storageController"]');
+        var $scope = angular.element(appElement).scope();
+
+        $scope.addFolder({
+            name: 'demo',
+            path: '/users/moye/demo',
+            route: 'demo',
+            folders: [],
+            files: []
+        });
     });
 
     // generate socket connection
