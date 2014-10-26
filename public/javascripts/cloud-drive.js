@@ -52,42 +52,6 @@
         return angular.element(appElement).scope();
     };
 
-    $('#upload_button').click(function () {
-        $('#uploader').modal();
-    });
-
-    $('#new_folder_button').click(function () {
-        $('#folderNameLine').show();
-        $('#folderName').focus();
-    });
-
-    // Folder creation
-    var folderNameHandle = function(folderName){
-        console.log(folderName);
-        if(!folderName){
-            $('#folderNameLabel').show().fadeOut(3000);
-        } else {
-            var $scope = getAngularScope();
-            $scope.addFolder({
-                name: folderName,
-                path: '/users/moye/demo',
-                route: 'demo',
-                folders: [],
-                files: []
-            });
-        }
-        $('#folderNameLine').hide();
-        $('#folderName').val('');
-    };
-    $('#folderName').blur(function(){
-        folderNameHandle($(this).val());
-    });
-    $('#folderName').keydown(function(e){
-        if(e.keyCode == 13) {
-            $(this).blur();
-        }
-    });
-
     // generate socket connection
     var socketClient = function () {
         var socket = io.connect('127.0.0.1:3000');
@@ -151,6 +115,42 @@
                         delete fileReader;
                         updateProgressBar(100);
                     });
+                }
+            });
+
+            $('#upload_button').click(function () {
+                $('#uploader').modal();
+            });
+
+            $('#new_folder_button').click(function () {
+                $('#folderNameLine').show();
+                $('#folderName').focus();
+            });
+
+            // Folder creation
+            var folderNameHandle = function(folderName){
+                console.log(folderName);
+                if(!folderName){
+                    $('#folderNameLabel').show().fadeOut(3000);
+                } else {
+                    var $scope = getAngularScope();
+                    $scope.addFolder({
+                        name: folderName,
+                        path: '/users/moye/demo',
+                        route: 'demo',
+                        folders: [],
+                        files: []
+                    });
+                }
+                $('#folderNameLine').hide();
+                $('#folderName').val('');
+            };
+            $('#folderName').blur(function(){
+                folderNameHandle($(this).val());
+            });
+            $('#folderName').keydown(function(e){
+                if(e.keyCode == 13) {
+                    $(this).blur();
                 }
             });
         } else {
