@@ -48,7 +48,7 @@
 
     // provide Angular scope for external caller.
     var getAngularScope = function () {
-        var appElement = document.querySelector('[ng-controller="storageController"]');
+        var appElement = document.querySelector('[ng-controller=storageController]');
         return angular.element(appElement).scope();
     };
 
@@ -57,14 +57,35 @@
     });
 
     $('#new_folder_button').click(function () {
-        var $scope = getAngularScope();
-        $scope.addFolder({
-            name: 'demo',
-            path: '/users/moye/demo',
-            route: 'demo',
-            folders: [],
-            files: []
-        });
+        $('#folderNameLine').show();
+        $('#folderName').focus();
+    });
+
+    // Folder creation
+    var folderNameHandle = function(folderName){
+        console.log(folderName);
+        if(!folderName){
+            $('#folderNameLabel').show().fadeOut(3000);
+        } else {
+            var $scope = getAngularScope();
+            $scope.addFolder({
+                name: folderName,
+                path: '/users/moye/demo',
+                route: 'demo',
+                folders: [],
+                files: []
+            });
+        }
+        $('#folderNameLine').hide();
+        $('#folderName').val('');
+    };
+    $('#folderName').blur(function(){
+        folderNameHandle($(this).val());
+    });
+    $('#folderName').keydown(function(e){
+        if(e.keyCode == 13) {
+            $(this).blur();
+        }
     });
 
     // generate socket connection
@@ -133,7 +154,7 @@
                 }
             });
         } else {
-            $("#fileName").html('Your browser does not support the File API. please change a newer browser.');
+            $('#fileName').html('Your browser does not support the File API. please change a newer browser.');
         }
     }
 

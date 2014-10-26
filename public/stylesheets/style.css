@@ -7663,6 +7663,10 @@ button.close {
     margin-top: 20px;
     margin-right: 10px;
 }
+#alert-actions{
+    margin-top: 20px;
+    margin-left: 30px;
+}
 #global-actions{float: right;}
 ul.horizontal {
     list-style: none;
