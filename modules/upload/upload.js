@@ -24,8 +24,8 @@ module.exports.bind = function (server) {
             mime: { t: mimeInfo.t, i: mimeInfo.i},
             modified: moment().format("M/D/YYYY h:mm A")
         };
-        storageUtils.addFileBySessionId(session, sessionId, parent, file, function(err){
-            if(err)
+        storageUtils.addFileBySessionId(session, sessionId, parent, file, function (err) {
+            if (err)
                 console.log('error on add file: ' + err + ', ' + JSON.stringify(file));
         });
     };
@@ -123,6 +123,26 @@ module.exports.bind = function (server) {
                     'percent': Files[name].getPercent() });
             }
 
+        });
+
+        //starting folder creation
+        socket.on('createFolder', function (data) {
+            userUtils.getUserRootPath(data.SessionId, function(err, rootPath) {
+                var folderPath = path.join(rootPath, data.parent, data.name);
+                console.log(folderPath);
+                if (fs.existsSync(folderPath)) {
+                    socket.emit('error', {error: 'folder already exists.'})
+                } else {
+                    pathUtils.mkdirAbsoluteSync(folderPath);
+                    storageUtils.addFolderBySessionId(session, data.SessionId, data.parent, data.name,
+                        function (err, folder) {
+                            if (err)
+                                socket.emit('error', {error: err})
+                            else
+                                socket.emit('createFolderDone', {'folder': folder});
+                        });
+                }
+            });
         });
     });
 };

@@ -52,6 +52,11 @@
         return angular.element(appElement).scope();
     };
 
+    // show error then fade out
+    var showErrorMessage = function(msg){
+        $('#folderNameLabel').text(msg).show().fadeOut(3000);
+    };
+
     // generate socket connection
     var socketClient = function () {
         var socket = io.connect('127.0.0.1:3000');
@@ -128,28 +133,39 @@
             });
 
             // Folder creation
-            var folderNameHandle = function(folderName){
-                console.log(folderName);
-                if(!folderName){
-                    $('#folderNameLabel').show().fadeOut(3000);
+            var folderNameHandle = function (folderName) {
+                if (!folderName) {
+                    showErrorMessage('请为新文件夹命名');
                 } else {
                     var $scope = getAngularScope();
-                    $scope.addFolder({
-                        name: folderName,
-                        path: '/users/moye/demo',
-                        route: 'demo',
-                        folders: [],
-                        files: []
+                    var folder = {
+                        'SessionId': $.cookie('session_id'),
+                        'name': folderName,
+                        'parent': $scope.model.currentFolder.route
+                    };
+                    socket.emit('createFolder', folder);
+                    socket.on('error', function(data){
+                        showErrorMessage(data.error);
                     });
+                    socket.on('createFolderDone', function(data){
+                        $scope.addFolder({
+                            name: data.folder.name,
+                            path: data.folder.path,
+                            route: data.folder.route,
+                            folders: [],
+                            files: []
+                        });
+                    });
+
                 }
                 $('#folderNameLine').hide();
                 $('#folderName').val('');
             };
-            $('#folderName').blur(function(){
+            $('#folderName').blur(function () {
                 folderNameHandle($(this).val());
             });
-            $('#folderName').keydown(function(e){
-                if(e.keyCode == 13) {
+            $('#folderName').keydown(function (e) {
+                if (e.keyCode == 13) {
                     $(this).blur();
                 }
             });

@@ -2,6 +2,8 @@ var mongoUtils = require('./mongoUtils');
 var userUtils = require('../auth/userUtils');
 var mimeUtils = require('../mime/mimeUtils');
 var moment = require('moment');
+var _ = require('underscore');
+var path = require('path');
 
 var Rx = require('rx');
 
@@ -89,19 +91,54 @@ module.exports.getStorageRecord = getStorageRecord;
  @folderName: third
  result: home/second/third
  */
-var findParent = function (folders, parentRoute) {
-    if (folders && folders.length > 0) {
-        for (var j = 0, len2 = folders.length; j < len2; j++) {
-            if (folders[j].route === parentRoute) {
-                return folders[j];
+var findParent = function (storage, parentRoute) {
+    if (!_.isArray(storage) && storage.route === parentRoute)
+        return storage;
+    else {
+        var folders = storage.folders;
+        if (folders && folders.length > 0) {
+            for (var j = 0, len2 = folders.length; j < len2; j++) {
+                if (folders[j].route === parentRoute) {
+                    return folders[j];
+                }
+                var result = findParent(folders[j].folders, parentRoute);
+                if (result)
+                    return result;
             }
-            var result = findParent(folders[j].folders, parentRoute);
-            if (result)
-                return result;
         }
     }
     return null;
 };
+function addFolderBySessionId(session, id, parentRoute, folderName, callback) {
+    var getUserByIdAsync = getUserById(session, id);
+    getUserByIdAsync.subscribe(function (reply) {
+        if (reply) {
+            var user = JSON.parse(reply);
+
+            getStorageRecordByUser(user, function (err, record) {
+                var storage = record.storage;
+                var parentFolder = findParent(storage, parentRoute);
+                if (parentFolder) {
+                    var folder = {
+                        name: folderName,
+                        path: path.join(parentFolder.path, folderName),
+                        route: path.join(parentFolder.route, folderName),
+                        folders: [],
+                        files: []
+                    };
+                    parentFolder.folders = parentFolder.folders || [];
+                    parentFolder.folders.push(folder);
+
+                    saveStorageByUser(user, storage, function (err) {
+                        callback(err, folder);
+                    });
+                }
+            });
+        }
+    }, errorOccurs);
+}
+module.exports.addFolderBySessionId = addFolderBySessionId;
+
 module.exports.addFolder = function (session, req, parentRoute, folderName, callback) {
     var getStorageRecordWrapper = Rx.Observable.fromNodeCallback(getStorageRecord);
     var getStorageRecordSync = getStorageRecordWrapper(session, req);
@@ -109,16 +146,17 @@ module.exports.addFolder = function (session, req, parentRoute, folderName, call
         function (record) {
             if (record) {
                 var storage = record.storage;
-                var parentFolder = findParent(storage.folders, parentRoute);
+                var parentFolder = findParent(storage, parentRoute);
                 if (parentFolder) {
-                    parentFolder.folders = parentFolder.folders || [];
-                    parentFolder.folders.push({
+                    var folder = {
                         name: folderName,
-                        path: parentFolder.path + '/' + folderName,
-                        route: parentFolder.route + '/' + folderName,
+                        path: path.join(parentFolder.path, folderName),
+                        route: path.join(parentFolder.route, folderName),
                         folders: [],
                         files: []
-                    });
+                    };
+                    parentFolder.folders = parentFolder.folders || [];
+                    parentFolder.folders.push(folder);
 
                     saveStorage(session, req, storage, function (err) {
                         callback(err);
@@ -139,14 +177,13 @@ module.exports.addFolder = function (session, req, parentRoute, folderName, call
  }
  */
 function addFileBySessionId(session, id, parentRoute, file, callback) {
-    var getUserByIdWrapper = Rx.Observable.fromNodeCallback(getUserById);
-    var getUserByIdAsync = getUserByIdWrapper(session, id);
+    var getUserByIdAsync = getUserById(session, id);
     getUserByIdAsync.subscribe(function (reply) {
         if (reply) {
             var user = JSON.parse(reply);
-            getStorageRecordByUser(user, function (record) {
+            getStorageRecordByUser(user, function (err, record) {
                 var storage = record.storage;
-                var parentFolder = findParent(storage.folders, parentRoute);
+                var parentFolder = findParent(storage, parentRoute);
                 if (parentFolder) {
                     file.mime = mimeUtils.lookup(file.name);
                     file.modified = moment().format("M/D/YYYY h:mm A");
@@ -170,7 +207,7 @@ module.exports.addFile = function (session, req, parentRoute, file, callback) {
         function (record) {
             if (record) {
                 var storage = record.storage;
-                var parentFolder = findParent(storage.folders, parentRoute);
+                var parentFolder = findParent(storage, parentRoute);
                 if (parentFolder) {
                     file.mime = mimeUtils.lookup(file.name);
                     file.modified = moment().format("M/D/YYYY h:mm A");

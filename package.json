@@ -25,6 +25,7 @@
         "socket.io": "*",
         "rx": "*",
         "mime": "*",
-        "moment": "*"
+        "moment": "*",
+        "underscore": "*"
     }
 }
