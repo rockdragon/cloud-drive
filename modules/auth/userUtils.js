@@ -54,6 +54,7 @@ function getUserRootPath(sessionId, callback) {
         var user = JSON.parse(reply);
         if(user)
             uploadPath = getUserRootPathByUser(user);
+        console.log(uploadPath);
         callback(err, uploadPath);
     });
 };

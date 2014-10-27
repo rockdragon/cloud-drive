@@ -143,6 +143,7 @@
                         'name': folderName,
                         'parent': $scope.model.currentFolder.route
                     };
+                    console.log(folder);
                     socket.emit('createFolder', folder);
                     socket.on('error', function(data){
                         showErrorMessage(data.error);

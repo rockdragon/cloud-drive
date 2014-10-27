@@ -1,18 +1,19 @@
 var path = require('path');
 var fs = require('fs');
-
+var utility = require('../other/utility');
 /*
  recursive create directory
     @dirPath: absolute path
  */
+
 module.exports.mkdirAbsoluteSync = function (dirPath, mode) {
-    dirPath = dirPath.trim('/');
+    var delimiter = utility.isWin() ? '\\' : '\/';
+    dirPath = dirPath.trim(delimiter);
     var currentPath = '';
-    var pathParts = dirPath.split('\/');
+    var pathParts = dirPath.split(delimiter);
     for (var i = 0; i < pathParts.length; i++) {
-        currentPath += '/' + pathParts[i];
+        currentPath += (utility.isWin() && pathParts[i].contains(':') ? '' : delimiter) + pathParts[i];
         if (!fs.existsSync(currentPath)) {
-            console.log('creating: ' + currentPath);
             fs.mkdirSync(currentPath, mode || 0755);
         }
     }

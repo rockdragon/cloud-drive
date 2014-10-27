@@ -129,7 +129,7 @@ module.exports.bind = function (server) {
         socket.on('createFolder', function (data) {
             userUtils.getUserRootPath(data.SessionId, function(err, rootPath) {
                 var folderPath = path.join(rootPath, data.parent, data.name);
-                console.log(folderPath);
+                console.log('folderPath: ' + folderPath);
                 if (fs.existsSync(folderPath)) {
                     socket.emit('error', {error: 'folder already exists.'})
                 } else {
@@ -137,7 +137,7 @@ module.exports.bind = function (server) {
                     storageUtils.addFolderBySessionId(session, data.SessionId, data.parent, data.name,
                         function (err, folder) {
                             if (err)
-                                socket.emit('error', {error: err})
+                                socket.emit('error', {error: err});
                             else
                                 socket.emit('createFolderDone', {'folder': folder});
                         });
