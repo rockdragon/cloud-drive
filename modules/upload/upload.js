@@ -29,6 +29,7 @@ module.exports.bind = function (server) {
             if (err)
                 console.log('error on add file: ' + err + ', ' + JSON.stringify(file));
         });
+        return file;
     };
 
     io.sockets.on('connection', function (socket) {
@@ -46,7 +47,8 @@ module.exports.bind = function (server) {
             var size = data.Size;
             var sessionId = data.SessionId;
             var currentPath = data.CurrentPath;
-            console.log('[start] received start event: %s, size: %d, session: %s', name, size, sessionId);
+            console.log('[start] received start event: %s, size: %d, session: %s, parent:%s',
+                name, size, sessionId, currentPath);
 
             //combine path
             userUtils.getUserRootPath(sessionId, function (err, userRootPath) {
@@ -55,7 +57,7 @@ module.exports.bind = function (server) {
                     data: '',
                     downloaded: 0,
                     handler: null,
-                    filePath: path.join(userRootPath, name),
+                    filePath: path.join(userRootPath, currentPath, name),
                     parent: currentPath,
                     sessionId: sessionId
                 };
@@ -103,10 +105,10 @@ module.exports.bind = function (server) {
                     if (err)
                         console.log('[upload] file write error: ' + err.toString());
                     //uploading completed
-                    onCompleted(Files[name].sessionId, Files[name].parent, name, Files[name].filePath, Files[name].fileSize);
+                    var file = onCompleted(Files[name].sessionId, Files[name].parent, name, Files[name].filePath, Files[name].fileSize);
 
                     delete Files[name];
-                    socket.emit('done', {name: name});
+                    socket.emit('done', {file: file});
                 });
             } else if (Files[name].data.length > 10485760) { //If the Data Buffer reaches 10MB
                 fs.write(Files[name].handler, Files[name].data, null, 'Binary', function (err, Writen) {

@@ -21,10 +21,10 @@
             return null;
         };
         $scope.bindingWithPath = function (currentPath) {
-            if ($scope.currentFolder.route !== currentPath) {
-                $scope.currentFolder = $scope.findFolder($scope.model.folders, currentPath);
+            if ($scope.model.currentFolder.route !== currentPath) {
+                $scope.model.currentFolder = $scope.findFolder($scope.model.folders, currentPath);
             }
-            $scope.binding($scope.currentFolder);
+            $scope.binding($scope.model.currentFolder);
         };
 
         $scope.model = JSON.parse($('#storageData').val());
@@ -32,6 +32,7 @@
 
         $scope.navigate = function (index) {
             $scope.binding($scope.folders[index]);
+            console.log($scope.model.currentFolder.route);
         };
 
         var modelChanged = function (oldValue, newValue, scope) {
@@ -44,6 +45,10 @@
             $scope.model.currentFolder.folders.push(folder);
             $scope.$apply();
         };
+        $scope.addFile = function (file) {
+            $scope.model.currentFolder.files.push(file);
+            $scope.$apply();
+        };
     }]);
 
     // provide Angular scope for external caller.
@@ -53,7 +58,7 @@
     };
 
     // show error then fade out
-    var showErrorMessage = function(msg){
+    var showErrorMessage = function (msg) {
         $('#folderNameLabel').text(msg).show().fadeOut(3000);
     };
 
@@ -67,6 +72,13 @@
         return socket;
     };
 
+    var showDialog = function () {
+        $('#uploader').modal();
+    };
+    var hideDialog = function () {
+        $('#uploader').modal('hide');
+    };
+
     //HTML File detection
     window.addEventListener('load', ready);
 
@@ -78,14 +90,14 @@
             socket.on('connect', function () {
                 console.log('connection established.');
             });
-            socket.on('error', function(){
+            socket.on('error', function () {
                 socket = socketClient();
             });
             //for add folder
-            socket.on('errorOccurs', function(data){
+            socket.on('errorOccurs', function (data) {
                 showErrorMessage(data.error);
             });
-            socket.on('createFolderDone', function(data){
+            socket.on('createFolderDone', function (data) {
                 console.log('createFolderDone received. ' + JSON.stringify(data));
                 getAngularScope().addFolder({
                     name: data.folder.name,
@@ -96,50 +108,56 @@
                 });
             });
 
+            //for add file
+            var currentFile = null;
+            var currentFileReader = null;
+            socket.on('moreData', function (data) { // more data in progress
+                console.log('moreData: ' + JSON.stringify(data));
+                updateProgressBar(data.percent);
+                var position = data.position * 524288;
+                var newFile = null;
+                if (currentFile.slice)
+                    newFile = currentFile.slice(position, position + Math.min(524288, currentFile.size - position));
+                else if (currentFile.webkitSlice)
+                    newFile = currentFile.webkitSlice(position, position + Math.min(524288, currentFile.size - position));
+                else if (currentFile.mozSlice)
+                    newFile = currentFile.mozSlice(position, position + Math.min(524288, currentFile.size - position));
+                if (newFile)
+                    currentFileReader.readAsBinaryString(newFile); // trigger upload event
+            });
+            socket.on('done', function (data) {
+                console.log('[done]: ' + JSON.stringify(data.file));
+                $('#fileName').val('');
+                delete currentFileReader;
+                delete currentFile;
+                updateProgressBar(100);
+                getAngularScope().addFile(data.file);
+                hideDialog();
+            });
+
             $('#choose-button').click(function () {
                 $('#choose-file').click();
             });
 
             $('#choose-file').on('change', function () {
-                var file = document.getElementById('choose-file').files[0];
-                if (file) {
-                    $('#fileName').val(file.name);
-                    var fileReader = new FileReader();
-                    fileReader.onload = function (evnt) {
-                        socket.emit('upload', { 'Name': file.name, 'Segment': evnt.target.result, 'SessionId': $.cookie('session_id')});
+                currentFile = document.getElementById('choose-file').files[0];
+                if (currentFile) {
+                    $('#fileName').val(currentFile.name);
+                    currentFileReader = new FileReader();
+                    currentFileReader.onload = function (evnt) {
+                        socket.emit('upload', { 'Name': currentFile.name,
+                            'Segment': evnt.target.result, 'SessionId': $.cookie('session_id')});
                     };
-                    socket.emit('start', {'Name': file.name,
-                        'Size': file.size,
+                    socket.emit('start', {'Name': currentFile.name,
+                        'Size': currentFile.size,
                         'SessionId': $.cookie('session_id'),
                         'CurrentPath': getAngularScope().model.currentFolder.route
-                    });
-
-                    socket.on('moreData', function (data) { // more data in progress
-                        console.log('moreData: ' + JSON.stringify(data));
-                        updateProgressBar(data.percent);
-                        var position = data.position * 524288;
-                        var newFile = null;
-                        if (file.slice)
-                            newFile = file.slice(position, position + Math.min(524288, file.size - position));
-                        else if (file.webkitSlice)
-                            newFile = file.webkitSlice(position, position + Math.min(524288, file.size - position));
-                        else if (file.mozSlice)
-                            newFile = file.mozSlice(position, position + Math.min(524288, file.size - position));
-                        if (newFile)
-                            fileReader.readAsBinaryString(newFile); // trigger upload event
-                    });
-
-                    socket.on('done', function (data) {
-                        console.log('[done]: ' + JSON.stringify(data));
-                        $('#fileName').val('');
-                        delete fileReader;
-                        updateProgressBar(100);
                     });
                 }
             });
 
             $('#upload_button').click(function () {
-                $('#uploader').modal();
+                showDialog();
             });
 
             $('#new_folder_button').click(function () {
