@@ -1,6 +1,6 @@
 (function () {
-//    var pathUtils = require('../../modules/upload/pathUtils');
-//    pathUtils.mkdirAbsoluteSync('D:\\files\\111');
+    var pathUtils = require('../../modules/upload/pathUtils');
+    pathUtils.mkdirAbsoluteSync('D:\\files\\111');
 
     var utility = require('../../modules/other/utility');
 

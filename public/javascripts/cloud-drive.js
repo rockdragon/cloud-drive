@@ -67,11 +67,6 @@
         return socket;
     };
 
-    // get current path from url
-    var currentPath = function () {
-        return $('#currentPath').val();
-    };
-
     //HTML File detection
     window.addEventListener('load', ready);
 
@@ -87,6 +82,7 @@
 
             $('#choose-file').on('change', function () {
                 var file = document.getElementById('choose-file').files[0];
+                var $scope = getAngularScope();
                 if (file) {
                     $('#fileName').val(file.name);
                     var fileReader = new FileReader();
@@ -96,7 +92,7 @@
                     socket.emit('start', {'Name': file.name,
                         'Size': file.size,
                         'SessionId': $.cookie('session_id'),
-                        'CurrentPath': currentPath()
+                        'CurrentPath': $scope.model.currentFolder.route
                     });
 
                     socket.on('moreData', function (data) { // more data in progress

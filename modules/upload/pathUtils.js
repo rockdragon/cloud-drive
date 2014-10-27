@@ -7,7 +7,7 @@ var utility = require('../other/utility');
  */
 
 module.exports.mkdirAbsoluteSync = function (dirPath, mode) {
-    var delimiter = utility.isWin() ? '\\' : '\/';
+    var delimiter = path.sep;
     dirPath = dirPath.trim(delimiter);
     var currentPath = '';
     var pathParts = dirPath.split(delimiter);

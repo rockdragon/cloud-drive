@@ -122,7 +122,7 @@ function addFolderBySessionId(session, id, parentRoute, folderName, callback) {
                     var folder = {
                         name: folderName,
                         path: path.join(parentFolder.path, folderName),
-                        route: path.join(parentFolder.route, folderName),
+                        route: parentFolder.route + (parentFolder.route.endsWith('/') ? '' : '/') + folderName,
                         folders: [],
                         files: []
                     };
