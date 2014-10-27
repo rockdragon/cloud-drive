@@ -19,7 +19,7 @@ var mimeTypes = {
     "text/html": {t: "Code", i: "s_web_page_white_code_32"},
     "application/javascript": {t: "Code", i: "s_web_page_white_code_32"},
     "text/x-java-source": {t: "Code", i: "s_web_page_white_code_32"},
-    "image/jpeg": {t: "Picture", i: "s_web_page_white_code_32"},
+    "image/jpeg": {t: "Picture", i: "s_web_page_white_picture_32"},
     "image/png": {t: "Picture", i: "s_web_page_white_picture_32"},
     "image/gif": {t: "Picture", i: "s_web_page_white_picture_32"},
     "image/bmp": {t: "Picture", i: "s_web_page_white_picture_32"},

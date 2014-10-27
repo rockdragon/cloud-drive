@@ -13,7 +13,7 @@
                     if (folders[j].route === route) {
                         return folders[j];
                     }
-                    var result = findParent(folders[j].folders, route);
+                    var result = $scope.findFolder(folders[j].folders, route);
                     if (result)
                         return result;
                 }
@@ -49,6 +49,13 @@
             $scope.model.currentFolder.files.push(file);
             $scope.$apply();
         };
+
+        // url changed
+        $scope.urlChange = function () {
+            var route = window.location.hash.slice(1) || '/';
+            $scope.bindingWithPath(route);
+        };
+        $scope.urlChange();
     }]);
 
     // provide Angular scope for external caller.
