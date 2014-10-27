@@ -81,6 +81,20 @@
             socket.on('error', function(){
                 socket = socketClient();
             });
+            //for add folder
+            socket.on('errorOccurs', function(data){
+                showErrorMessage(data.error);
+            });
+            socket.on('createFolderDone', function(data){
+                console.log('createFolderDone received. ' + JSON.stringify(data));
+                getAngularScope().addFolder({
+                    name: data.folder.name,
+                    path: data.folder.path,
+                    route: data.folder.route,
+                    folders: [],
+                    files: []
+                });
+            });
 
             $('#choose-button').click(function () {
                 $('#choose-file').click();
@@ -88,7 +102,6 @@
 
             $('#choose-file').on('change', function () {
                 var file = document.getElementById('choose-file').files[0];
-                var $scope = getAngularScope();
                 if (file) {
                     $('#fileName').val(file.name);
                     var fileReader = new FileReader();
@@ -98,7 +111,7 @@
                     socket.emit('start', {'Name': file.name,
                         'Size': file.size,
                         'SessionId': $.cookie('session_id'),
-                        'CurrentPath': $scope.model.currentFolder.route
+                        'CurrentPath': getAngularScope().model.currentFolder.route
                     });
 
                     socket.on('moreData', function (data) { // more data in progress
@@ -139,28 +152,13 @@
                 if (!folderName) {
                     showErrorMessage('请为新文件夹命名');
                 } else {
-                    var $scope = getAngularScope();
                     var folder = {
                         'SessionId': $.cookie('session_id'),
                         'name': folderName,
-                        'parent': $scope.model.currentFolder.route
+                        'parent': getAngularScope().model.currentFolder.route
                     };
                     console.log(folder);
                     socket.emit('createFolder', folder);
-                    socket.on('errorOccurs', function(data){
-                        showErrorMessage(data.error);
-                    });
-                    socket.on('createFolderDone', function(data){
-                        console.log('createFolderDone received. ' + JSON.stringify(data));
-                        $scope.addFolder({
-                            name: data.folder.name,
-                            path: data.folder.path,
-                            route: data.folder.route,
-                            folders: [],
-                            files: []
-                        });
-                    });
-
                 }
                 $('#folderNameLine').hide();
                 $('#folderName').val('');
