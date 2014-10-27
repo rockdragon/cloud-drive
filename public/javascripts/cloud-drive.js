@@ -75,6 +75,12 @@
 
         if (window.File && window.FileReader) {
             var socket = socketClient();
+            socket.on('connect', function () {
+                console.log('connection established.');
+            });
+            socket.on('error', function(){
+                socket = socketClient();
+            });
 
             $('#choose-button').click(function () {
                 $('#choose-file').click();
@@ -141,10 +147,11 @@
                     };
                     console.log(folder);
                     socket.emit('createFolder', folder);
-                    socket.on('error', function(data){
+                    socket.on('errorOccurs', function(data){
                         showErrorMessage(data.error);
                     });
                     socket.on('createFolderDone', function(data){
+                        console.log('createFolderDone received. ' + JSON.stringify(data));
                         $scope.addFolder({
                             name: data.folder.name,
                             path: data.folder.path,

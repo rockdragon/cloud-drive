@@ -11,6 +11,7 @@ module.exports.bind = function (server) {
     var Files = {};
 
     var io = require('socket.io').listen(server);
+
     var respTime = function (socket) {
         socket.send((new Date()).getTime());
     };
@@ -127,21 +128,21 @@ module.exports.bind = function (server) {
 
         //starting folder creation
         socket.on('createFolder', function (data) {
-            userUtils.getUserRootPath(data.SessionId, function(err, rootPath) {
+            userUtils.getUserRootPath(data.SessionId, function (err, rootPath) {
                 var folderPath = path.join(rootPath, data.parent, data.name);
                 console.log('folderPath: ' + folderPath);
-                if (fs.existsSync(folderPath)) {
-                    socket.emit('error', {error: 'folder already exists.'})
-                } else {
+                if (!fs.existsSync(folderPath)) {
                     pathUtils.mkdirAbsoluteSync(folderPath);
-                    storageUtils.addFolderBySessionId(session, data.SessionId, data.parent, data.name,
-                        function (err, folder) {
-                            if (err)
-                                socket.emit('error', {error: err});
-                            else
-                                socket.emit('createFolderDone', {'folder': folder});
-                        });
                 }
+                storageUtils.addFolderBySessionId(session, data.SessionId, data.parent, data.name,
+                    function (err, folder) {
+                        console.log('addFolderBySessionId done.');
+                        if (err)
+                            socket.emit('errorOccurs', {error: err});
+                        else
+                            socket.emit('createFolderDone', {'folder': folder});
+                    });
+
             });
         });
     });

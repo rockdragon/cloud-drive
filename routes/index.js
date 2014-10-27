@@ -16,8 +16,8 @@ router.route('/').get(function (req, res) {
         }
         if(user) {
             storageUtils.getStorageRecordByUser(user, function(err, record){
-                if(storage)
-                    res.render('users/user_index', {title: 'Welcome.', user: user, storage: storage});
+                if(record)
+                    res.render('users/user_index', {title: 'Welcome.', user: user, storage: record.storage});
                 else{
                     console.log('create user storage record.');
                     var storage = {
