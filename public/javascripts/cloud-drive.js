@@ -7,30 +7,46 @@
             $scope.folders = $scope.model.currentFolder.folders;
             $scope.files = $scope.model.currentFolder.files;
         };
+        $scope.isArray = function (obj) {
+            return toString.call(obj) === '[object Array]';
+        };
         $scope.findFolder = function (folders, route) {
-            if (folders && folders.length > 0) {
-                for (var j = 0, len2 = folders.length; j < len2; j++) {
-                    if (folders[j].route === route) {
-                        return folders[j];
+            if (!$scope.isArray(folders) && folders.route === route)
+                return folders;
+            else {
+                folders = folders.folders;
+                if (folders && folders.length > 0) {
+                    for (var j = 0, len2 = folders.length; j < len2; j++) {
+                        if (folders[j].route === route) {
+                            return folders[j];
+                        }
+                        var result = $scope.findFolder(folders[j].folders, route);
+                        if (result)
+                            return result;
                     }
-                    var result = $scope.findFolder(folders[j].folders, route);
-                    if (result)
-                        return result;
                 }
             }
             return null;
         };
 
-        $scope.writeLinkPaths = function(){
+        $scope.writeLinkPaths = function () {
             var paths = ['/'];
-            if($scope.model.currentFolder.route.length > 1)
-                paths.concat($scope.model.currentFolder.route.slice(0, 1).split('/'));
-            console.log(paths);
+            var route = $scope.model.currentFolder.route;
+            if (route.length > 1)
+                paths = paths.concat(route.slice(1).split('/'));
+            var accumulated = '';
+            $scope.linkPaths = [];
+            for (var i = 0, len = paths.length; i < len; i++) {
+                accumulated += (i > 1 ? '/' : '') + paths[i];
+                $scope.linkPaths.push({ i: accumulated, t: paths[i] });
+            }
         };
 
         $scope.bindingWithPath = function (currentPath) {
+            console.log($scope.model.currentFolder, currentPath);
             if ($scope.model.currentFolder.route !== currentPath) {
-                $scope.model.currentFolder = $scope.findFolder($scope.model.folders, currentPath);
+                $scope.model.currentFolder = $scope.findFolder($scope.model, currentPath);
+                console.log('found: ' + $scope.model.currentFolder);
             }
             $scope.binding($scope.model.currentFolder);
 
@@ -63,8 +79,8 @@
 
         // url changed
         $scope.urlChange = function () {
-            var route = window.location.hash.slice(1) || '/';
-            $scope.bindingWithPath(route);
+            var route =  window.location.hash.slice(1) || '/';
+                $scope.bindingWithPath(route);
         };
         $scope.urlChange();
     }]);
