@@ -20,11 +20,22 @@
             }
             return null;
         };
+
+        $scope.writeLinkPaths = function(){
+            var paths = ['/'];
+            if($scope.model.currentFolder.route.length > 1)
+                paths.concat($scope.model.currentFolder.route.slice(0, 1).split('/'));
+            console.log(paths);
+        };
+
         $scope.bindingWithPath = function (currentPath) {
             if ($scope.model.currentFolder.route !== currentPath) {
                 $scope.model.currentFolder = $scope.findFolder($scope.model.folders, currentPath);
             }
             $scope.binding($scope.model.currentFolder);
+
+            $scope.writeLinkPaths();
+
         };
 
         $scope.model = JSON.parse($('#storageData').val());
@@ -32,7 +43,7 @@
 
         $scope.navigate = function (index) {
             $scope.binding($scope.folders[index]);
-            console.log($scope.model.currentFolder.route);
+            $scope.writeLinkPaths();
         };
 
         var modelChanged = function (oldValue, newValue, scope) {
