@@ -7785,3 +7785,7 @@ ul.horizontal li {
 .ng-cloak, .x-ng-cloak {
     display: none !important;
 }
+/*context menu*/
+.contextMenu{
+    display: none;
+}
