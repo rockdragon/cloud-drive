@@ -119,6 +119,44 @@
     function ready() {
         $('#storageTable').show();
 
+        $('tr.lineFolder').contextMenu('myMenu2', {
+            //菜单样式
+            menuStyle: {
+                border: '2px solid #000'
+            },
+            //菜单项样式
+            itemStyle: {
+                fontFamily : 'verdana',
+                backgroundColor : 'green',
+                color: 'white',
+                border: 'none',
+                padding: '1px'
+
+            },
+            //菜单项鼠标放在上面样式
+            itemHoverStyle: {
+                color: 'blue',
+                backgroundColor: 'red',
+                border: 'none'
+            },
+            //事件
+            bindings:
+            {
+                'item_1': function(t) {
+                    alert('Trigger was '+t.id+'\nAction was item_1');
+                },
+                'item_2': function(t) {
+                    alert('Trigger was '+t.id+'\nAction was item_2');
+                },
+                'item_3': function(t) {
+                    alert('Trigger was '+t.id+'\nAction was item_3');
+                },
+                'item_4': function(t) {
+                    alert('Trigger was '+t.id+'\nAction was item_4');
+                }
+            }
+        });
+
         if (window.File && window.FileReader) {
             var socket = socketClient();
             socket.on('connect', function () {
