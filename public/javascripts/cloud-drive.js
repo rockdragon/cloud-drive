@@ -122,24 +122,17 @@
         // context menu
         $('tr.lineFolder').contextMenu('lineFolderMenu', {
             itemHoverStyle: {
-                color: 'blue',
+                color: 'black',
                 backgroundColor: '#ccc',
                 border: 'none'
             },
             bindings:
             {
-                'item_1': function(t) {
+                'rename': function(t) {
                     console.log(t.id);
-                    alert('Trigger was '+ t.id+'\nAction was item_1');
                 },
-                'item_2': function(t) {
-                    alert('Trigger was '+t.id+'\nAction was item_2');
-                },
-                'item_3': function(t) {
-                    alert('Trigger was '+t.id+'\nAction was item_3');
-                },
-                'item_4': function(t) {
-                    alert('Trigger was '+t.id+'\nAction was item_4');
+                'delete': function(t) {
+                    console.log(t.id);
                 }
             }
         });
