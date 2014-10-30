@@ -7657,6 +7657,24 @@ button.close {
 .icon-sn-facebook {
     background-position: -100px 0;
 }
+.btn-sn-douban {
+    background: #072;
+}
+.icon-sn-douban {
+    background-position: -160px 0;
+}
+.btn-sn-github {
+    background: #000;
+}
+.icon-sn-github {
+    background-position: -20px 0;
+}
+.btn-sn-weibo {
+    background: #E90D24;
+}
+.icon-sn-weibo {
+    background-position: -40px 0;
+}
 
 /* drive buttons */
 #path-actions, #global-actions {
