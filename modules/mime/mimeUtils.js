@@ -5,7 +5,7 @@ var mimeTypes = {
     "application/x-rar-compressed": { t: "Archive", i: "s_web_page_white_compressed_32" },
     "application/zip": { t: "Archive", i: "s_web_page_white_compressed_32" },
     "application/x-7z-compressed": { t: "Archive", i: "s_web_page_white_compressed_32" },
-    
+
     "audio/mpeg": { t: "Audio", i: "s_web_page_white_sound_32"},
     "audio/mp4": { t: "Audio", i: "s_web_page_white_sound_32"},
     "video/mp4": { t: "Video", i: "s_web_page_white_film_32"},
