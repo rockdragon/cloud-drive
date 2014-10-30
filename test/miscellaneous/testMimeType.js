@@ -14,6 +14,7 @@
     console.log(mime.lookup('temp.rmvb'));
     console.log(mime.lookup('temp.avi'));
     console.log(mime.lookup('temp.m4a'));
+    console.log(mime.lookup('temp.wmv'));
 
     //text
     console.log(mime.lookup('temp.txt'));
