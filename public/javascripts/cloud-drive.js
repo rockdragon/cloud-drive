@@ -120,6 +120,37 @@
         $('#storageTable').show();
 
         // context menu
+        $.contextMenu({
+            selector: '.lineFolder',
+            callback: function(key, options) {
+                console.log(key + ' on ' + options.$trigger[0].id);
+            },
+            items: {
+                "edit": {name: "Rename", icon: "edit"},
+                "cut": {name: "Cut", icon: "cut"},
+                "copy": {name: "Copy", icon: "copy"},
+                "paste": {name: "Paste", icon: "paste"},
+                "delete": {name: "Delete", icon: "delete"},
+                "sep1": "---------",
+                "quit": {name: "Quit", icon: "quit"}
+            }
+        });
+        $.contextMenu({
+            selector: '.lineFile',
+            callback: function(key, options) {
+                console.log(key + ' on ' + options.$trigger[0].id);
+            },
+            items: {
+                "edit": {name: "Edit", icon: "edit"},
+                "cut": {name: "Cut", icon: "cut"},
+                "copy": {name: "Copy", icon: "copy"},
+                "paste": {name: "Paste", icon: "paste"},
+                "delete": {name: "Delete", icon: "delete"},
+                "sep1": "---------",
+                "quit": {name: "Quit", icon: "quit"}
+            }
+        });
+
         $('tr.lineFolder').contextMenu('lineFolderMenu', {
             itemHoverStyle: {
                 color: 'black',
