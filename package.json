@@ -22,7 +22,6 @@
         "passport-facebook": "*",
         "passport-douban": "*",
         "passport-github": "*",
-        "passport-weibo": "*",
         "formidable": "*",
         "socket.io": "*",
         "rx": "*",
