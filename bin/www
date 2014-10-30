@@ -7,14 +7,24 @@
     app.set('port', process.env.PORT || 3000);
 
     // sticky-session built-in cluster worker
-    return sticky(function () {
-        var http = require('http'),
-            upload = require('../modules/upload/upload');
-        var server = http.createServer(app);
-        upload.bind(server);
-        console.log('worker pid: ' + process.pid);
-        return server;
-    }).listen(app.get('port'), function () {
+//    return sticky(function () {
+//        var http = require('http'),
+//            upload = require('../modules/upload/upload');
+//        var server = http.createServer(app);
+//        upload.bind(server);
+//        console.log('worker pid: ' + process.pid);
+//        return server;
+//    }).listen(app.get('port'), function () {
+//        debug('Express server listening on port ' + app.get('port'));
+//    });
+
+    // single core settings
+    var http = require('http'),
+        upload = require('../modules/upload/upload');
+    var server = http.createServer(app);
+    upload.bind(server);
+    console.log('worker pid: ' + process.pid);
+    return server.listen(app.get('port'), function () {
         debug('Express server listening on port ' + app.get('port'));
     });
 })();
