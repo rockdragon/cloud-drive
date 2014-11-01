@@ -1,6 +1,6 @@
 (function () {
-    var storageUtils = require('../../modules/db/storageUtils');
-    var mongoUtils = require('../../modules/db/mongoUtils');
+    var storageUtils = require('.././storageUtils');
+    var mongoUtils = require('.././mongoUtils');
 
     //mock up
     var storage = {

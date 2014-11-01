@@ -3,7 +3,7 @@ var router = express.Router();
 
 var session = require('../modules/sessions/sessionUtils');
 var userUtils = require('../modules/auth/userUtils');
-var storageUtils = require('../modules/db/storageUtils');
+var storageUtils = require('../modules/storage/storageUtils');
 
 /* GET home page. */
 router.route('/').get(function (req, res) {

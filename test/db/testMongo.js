@@ -1,5 +1,5 @@
 (function () {
-    var mongoUtils = require('../../modules/db/mongoUtils');
+    var mongoUtils = require('.././mongoUtils');
 
     var userType = 'development';
     var userId = '12345678';

@@ -2,7 +2,7 @@ var fs = require('fs');
 var path = require('path');
 var userUtils = require('../auth/userUtils');
 var pathUtils = require('./pathUtils');
-var storageUtils = require('../db/storageUtils');
+var storageUtils = require('../storage/storageUtils');
 var session = require('../sessions/sessionUtils');
 var moment = require('moment');
 var mimeUtils = require('../mime/mimeUtils');
@@ -146,6 +146,18 @@ module.exports.bind = function (server) {
                     });
 
             });
+        });
+
+        //deleting folder or file
+        socket.on('delete', function(data){
+            var sessionId = data.SessionId;
+            var dirPath = data.DirPath;
+
+        });
+
+        socket.on('shareLink', function(data){
+            var sessionId = data.SessionId;
+            var dirPath = data.DirPath;
         });
     });
 };
