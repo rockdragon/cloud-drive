@@ -5,7 +5,8 @@
     <title><%= title %></title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <link rel='stylesheet' href='/stylesheets/style.css'/>
-    <link href="http://medialize.github.io/jQuery-contextMenu/src/jquery.contextMenu.css" rel="stylesheet" type="text/css" />
+    <link href="http://medialize.github.io/jQuery-contextMenu/src/jquery.contextMenu.css" rel="stylesheet"
+          type="text/css"/>
 </head>
 <body ng-controller="storageController">
 <div class="navbar navbar-default navbar-fixed-top">
@@ -37,11 +38,10 @@
             <div class="navbar-collapse collapse">
                 <div class="nav navbar-nav" id="path-actions">
                     <ul id="pathLinks" class="horizontal ng-cloak">
-                        <li ng-repeat-start="linkPath in linkPaths" class="action">
-                            <a href="#{{ !$first ? linkPath.i : '' }}" ng-click="bindingWithPath(linkPath.i);">{{ $first ? 'root' : linkPath.t }}</a>
-                        </li>
-                        <li ng-repeat-end>
-                            {{!$last ? '/' : '' }}
+                        <li ng-repeat="linkPath in linkPaths" class="action">
+                            <a href="#{{ !$first ? linkPath.i : '' }}"
+                               ng-click="bindingWithPath(linkPath.i);"
+                               class="btn-link">{{ $first ? 'root' : linkPath.t }}</a>
                         </li>
                     </ul>
                 </div>

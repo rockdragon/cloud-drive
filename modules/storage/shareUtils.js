@@ -5,7 +5,7 @@ var mongoUtils = require('./mongoUtils');
 var storageUtils = require('./storageUtils');
 
 var delimiter = '|';
-
+var algorithm = 'aes-256-cbc';
 /*
  @userType
  @userId
@@ -15,7 +15,7 @@ var delimiter = '|';
  */
 module.exports.generateShareLinkSync = function (userType, userId, storageType, route) {
     storageType = storageType === 'folder' ? storageType : 'file';
-    var cipher = crypto.createCipher('aes-256-cbc', configUtils.getConfigs().SECRET);
+    var cipher = crypto.createCipher(algorithm, configUtils.getConfigs().SECRET);
     var concatenation = userType + delimiter + userId + delimiter + storageType + delimiter + route;
     var result = cipher.update(concatenation, 'utf8', 'hex');
     result += cipher.final('hex');
@@ -29,10 +29,9 @@ module.exports.generateShareLinkSync = function (userType, userId, storageType, 
  */
 module.exports.fromSharedLinkSync = function (link) {
     try {
-        var cipher = crypto.createDecipher('aes-256-cbc', configUtils.getConfigs().SECRET);
+        var cipher = crypto.createDecipher(algorithm, configUtils.getConfigs().SECRET);
         var result = cipher.update(link, 'hex', 'utf8');
         result += cipher.final('utf8');
-        console.log(result);
         if (result && result.contains(delimiter)) {
             var parts = result.split(delimiter);
             if (parts.length === 4) {
@@ -63,7 +62,7 @@ module.exports.getSpecificStorage = function (userType, userId, storageType, rou
             var finder = storageType === 'folder' ? storageUtils.findFolder : storageUtils.findFile;
             var storage = finder(record.storage, route);
             callback(err, storage);
-        }
-        callback(err, null);
+        } else
+            callback(err, null);
     });
 };

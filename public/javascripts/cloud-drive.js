@@ -50,7 +50,6 @@
             };
 
             $scope.bindingWithPath = function (currentPath) {
-                console.log($scope.model.currentFolder, currentPath);
                 if ($scope.model.currentFolder.route !== currentPath) {
                     $scope.model.currentFolder = $scope.findFolder($scope.model, currentPath);
                     $log.log('found: ', $scope.model.currentFolder);
@@ -150,22 +149,6 @@
                 "rename": {name: "Rename", icon: "edit"},
                 "sep1": "---------",
                 "delete": {name: "Delete", icon: "delete"}
-            }
-        });
-
-        $('tr.lineFolder').contextMenu('lineFolderMenu', {
-            itemHoverStyle: {
-                color: 'black',
-                backgroundColor: '#ccc',
-                border: 'none'
-            },
-            bindings: {
-                'rename': function (t) {
-                    console.log(t.id);
-                },
-                'delete': function (t) {
-                    console.log(t.id);
-                }
             }
         });
 

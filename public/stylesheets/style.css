@@ -7793,6 +7793,14 @@ ul.horizontal li {
     font-size: 14px;
     white-space: pre;
 }
+#path-actions a{
+    color: #2895f1;
+}
+#pathLinks > li + li:before {
+    content: "/\00a0";
+    padding: 0 5px;
+    color: #cccccc;
+}
 /* uploader */
 #uploader{
     position: fixed;

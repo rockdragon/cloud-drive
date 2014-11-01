@@ -32,14 +32,19 @@ authUtils(app, session);
 //routers
 var index = require('./routes/index');
 var login = require('./routes/login');
+var share = require('./routes/share');
+var go404 = require('./routes/404');
 app.use('/', index);
 app.use('/login', login);
+app.use('/share/', share);
+app.use('/404', go404);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
     var err = new Error('Not Found');
     err.status = 404;
     next(err);
+//    return res.redirect('/404');
 });
 
 // error handlers
