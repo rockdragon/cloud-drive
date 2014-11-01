@@ -1,5 +1,6 @@
 var path = require('path');
 var fs = require('fs');
+var rimraf = require('rimraf');
 var utility = require('../other/utility');
 /*
  recursive create directory
@@ -16,5 +17,15 @@ module.exports.mkdirAbsoluteSync = function (dirPath, mode) {
         if (!fs.existsSync(currentPath)) {
             fs.mkdirSync(currentPath, mode || 0755);
         }
+    }
+};
+
+/*
+ recursive delete path entirely
+ @dirPath: absolute path
+ */
+module.exports.deleteTreeSync = function(dirPath){
+    if(fs.existsSync(dirPath)) {
+        rimraf.sync(dirPath);
     }
 };

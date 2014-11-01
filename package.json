@@ -27,6 +27,7 @@
         "rx": "*",
         "mime": "*",
         "moment": "*",
-        "underscore": "*"
+        "underscore": "*",
+        "rimraf" : "*"
     }
 }
