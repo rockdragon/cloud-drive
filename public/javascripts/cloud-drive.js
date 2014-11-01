@@ -1,89 +1,96 @@
 (function () {
     var storageApp = angular.module('storageApp', []);
 
-    storageApp.controller('storageController', ['$scope', function ($scope) {
-        $scope.binding = function (currentFolder) {
-            $scope.model.currentFolder = currentFolder;
-            $scope.folders = $scope.model.currentFolder.folders;
-            $scope.files = $scope.model.currentFolder.files;
+    storageApp.factory('DataService', [function () {
+        return {
+            data: JSON.parse($('#storageData').val())
         };
-        $scope.isArray = function (obj) {
-            return toString.call(obj) === '[object Array]';
-        };
-        $scope.findFolder = function (folders, route) {
-            if (!$scope.isArray(folders) && folders.route === route)
-                return folders;
-            else {
-                folders = folders.folders;
-                if (folders && folders.length > 0) {
-                    for (var j = 0, len2 = folders.length; j < len2; j++) {
-                        if (folders[j].route === route) {
-                            return folders[j];
+    }]);
+
+    storageApp.controller('storageController', ['$scope', '$window', '$log', 'DataService',
+        function ($scope, $window, $log, DataService) {
+            $scope.binding = function (currentFolder) {
+                $scope.model.currentFolder = currentFolder;
+                $scope.folders = $scope.model.currentFolder.folders;
+                $scope.files = $scope.model.currentFolder.files;
+            };
+            $scope.isArray = function (obj) {
+                return toString.call(obj) === '[object Array]';
+            };
+            $scope.findFolder = function (folders, route) {
+                if (!$scope.isArray(folders) && folders.route === route)
+                    return folders;
+                else {
+                    folders = folders.folders;
+                    if (folders && folders.length > 0) {
+                        for (var j = 0, len2 = folders.length; j < len2; j++) {
+                            if (folders[j].route === route) {
+                                return folders[j];
+                            }
+                            var result = $scope.findFolder(folders[j].folders, route);
+                            if (result)
+                                return result;
                         }
-                        var result = $scope.findFolder(folders[j].folders, route);
-                        if (result)
-                            return result;
                     }
                 }
-            }
-            return null;
-        };
+                return null;
+            };
 
-        $scope.writeLinkPaths = function () {
-            var paths = ['/'];
-            var route = $scope.model.currentFolder.route;
-            if (route.length > 1)
-                paths = paths.concat(route.slice(1).split('/'));
-            var accumulated = '';
-            $scope.linkPaths = [];
-            for (var i = 0, len = paths.length; i < len; i++) {
-                accumulated += (i > 1 ? '/' : '') + paths[i];
-                $scope.linkPaths.push({ i: accumulated, t: paths[i] });
-            }
-        };
+            $scope.writeLinkPaths = function () {
+                var paths = ['/'];
+                var route = $scope.model.currentFolder.route;
+                if (route.length > 1)
+                    paths = paths.concat(route.slice(1).split('/'));
+                var accumulated = '';
+                $scope.linkPaths = [];
+                for (var i = 0, len = paths.length; i < len; i++) {
+                    accumulated += (i > 1 ? '/' : '') + paths[i];
+                    $scope.linkPaths.push({ i: accumulated, t: paths[i] });
+                }
+            };
 
-        $scope.bindingWithPath = function (currentPath) {
-            console.log($scope.model.currentFolder, currentPath);
-            if ($scope.model.currentFolder.route !== currentPath) {
-                $scope.model.currentFolder = $scope.findFolder($scope.model, currentPath);
-                console.log('found: ' + $scope.model.currentFolder);
-            }
-            $scope.binding($scope.model.currentFolder);
+            $scope.bindingWithPath = function (currentPath) {
+                console.log($scope.model.currentFolder, currentPath);
+                if ($scope.model.currentFolder.route !== currentPath) {
+                    $scope.model.currentFolder = $scope.findFolder($scope.model, currentPath);
+                    $log.log('found: ', $scope.model.currentFolder);
+                }
+                $scope.binding($scope.model.currentFolder);
 
-            $scope.writeLinkPaths();
+                $scope.writeLinkPaths();
 
-        };
+            };
 
-        $scope.model = JSON.parse($('#storageData').val());
-        $scope.binding($scope.model);
+            $scope.model = DataService.data;
+            $scope.binding($scope.model);
 
-        $scope.navigate = function (index) {
-            $scope.binding($scope.folders[index]);
-            $scope.writeLinkPaths();
-        };
+            $scope.navigate = function (index) {
+                $scope.binding($scope.folders[index]);
+                $scope.writeLinkPaths();
+            };
 
-        var modelChanged = function (oldValue, newValue, scope) {
-            $scope.binding($scope.model.currentFolder);
-        };
-        $scope.$watch($scope.model, modelChanged, true);
+            var modelChanged = function (oldValue, newValue, scope) {
+                $scope.binding($scope.model.currentFolder);
+            };
+            $scope.$watch($scope.model, modelChanged, true);
 
-        // provide functionality that change model external
-        $scope.addFolder = function (folder) {
-            $scope.model.currentFolder.folders.push(folder);
-            $scope.$apply();
-        };
-        $scope.addFile = function (file) {
-            $scope.model.currentFolder.files.push(file);
-            $scope.$apply();
-        };
+            // provide functionality that change model external
+            $scope.addFolder = function (folder) {
+                $scope.model.currentFolder.folders.push(folder);
+                $scope.$apply();
+            };
+            $scope.addFile = function (file) {
+                $scope.model.currentFolder.files.push(file);
+                $scope.$apply();
+            };
 
-        // url changed
-        $scope.urlChange = function () {
-            var route =  window.location.hash.slice(1) || '/';
+            // url changed
+            $scope.urlChange = function () {
+                var route = $window.location.hash.slice(1) || '/';
                 $scope.bindingWithPath(route);
-        };
-        $scope.urlChange();
-    }]);
+            };
+            $scope.urlChange();
+        }]);
 
     // provide Angular scope for external caller.
     var getAngularScope = function () {
@@ -122,7 +129,7 @@
         // context menu
         $.contextMenu({
             selector: '.lineFolder',
-            callback: function(key, options) {
+            callback: function (key, options) {
                 console.log(key + ' on ' + options.$trigger[0].id);
             },
             items: {
@@ -134,7 +141,7 @@
         });
         $.contextMenu({
             selector: '.lineFile',
-            callback: function(key, options) {
+            callback: function (key, options) {
                 console.log(key + ' on ' + options.$trigger[0].id);
             },
             items: {
@@ -152,12 +159,11 @@
                 backgroundColor: '#ccc',
                 border: 'none'
             },
-            bindings:
-            {
-                'rename': function(t) {
+            bindings: {
+                'rename': function (t) {
                     console.log(t.id);
                 },
-                'delete': function(t) {
+                'delete': function (t) {
                     console.log(t.id);
                 }
             }
