@@ -1,7 +1,7 @@
 (function () {
     var shareUtils = require('../../modules/storage/shareUtils');
 
-    var crypted = shareUtils.generateShareLinkSync('development', '12345678', '/pictures');
+    var crypted = shareUtils.generateShareLinkSync('development', '12345678', 'folder', '/pictures');
     console.log('crypted: ', crypted);
 
     var decrypted = shareUtils.fromSharedLinkSync(crypted);

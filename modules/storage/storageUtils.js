@@ -16,6 +16,16 @@ var errorOccurs = function (err) {
     console.log('Error: ' + err)
 };
 
+module.exports.saveStorageByUser = saveStorageByUser;
+module.exports.saveStorage = saveStorage;
+module.exports.getStorageRecordByUser = getStorageRecordByUser;
+module.exports.getStorageRecord = getStorageRecord;
+module.exports.addFolderBySessionId = addFolderBySessionId;
+module.exports.addFileBySessionId = addFileBySessionId;
+module.exports.addFile = addFile;
+module.exports.findFolder = findFolder;
+module.exports.findFile = findFile;
+
 /*
  add or update a user storage
  */
@@ -36,7 +46,6 @@ function saveStorageByUser(user, storage, callback) {
             }
         }, errorOccurs);
 }
-module.exports.saveStorageByUser = saveStorageByUser;
 
 function saveStorage(session, req, storage, callback) {
 
@@ -56,7 +65,6 @@ function saveStorage(session, req, storage, callback) {
 
     getUserLogic(session, req, storage, callback, saveStorageByUser);
 }
-module.exports.saveStorage = saveStorage;
 
 /*
  retrieve a user storage record
@@ -67,8 +75,8 @@ function getStorageRecordByUser(user, callback) {
         function (record) {
             callback(null, record);
         }, errorOccurs);
-};
-module.exports.getStorageRecordByUser = getStorageRecordByUser;
+}
+
 function getStorageRecord(session, req, callback) {
     var getUserSync = getUser(session, req);
 
@@ -83,7 +91,6 @@ function getStorageRecord(session, req, callback) {
             }
         }, errorOccurs);
 }
-module.exports.getStorageRecord = getStorageRecord;
 
 /*
  add a folder to user's storage
@@ -91,24 +98,7 @@ module.exports.getStorageRecord = getStorageRecord;
  @folderName: third
  result: home/second/third
  */
-var findParent = function (storage, parentRoute) {
-    if (!_.isArray(storage) && storage.route === parentRoute)
-        return storage;
-    else {
-        var folders = storage.folders;
-        if (folders && folders.length > 0) {
-            for (var j = 0, len2 = folders.length; j < len2; j++) {
-                if (folders[j].route === parentRoute) {
-                    return folders[j];
-                }
-                var result = findParent(folders[j].folders, parentRoute);
-                if (result)
-                    return result;
-            }
-        }
-    }
-    return null;
-};
+
 function addFolderBySessionId(session, id, parentRoute, folderName, callback) {
     var getUserByIdAsync = getUserById(session, id);
     getUserByIdAsync.subscribe(function (reply) {
@@ -117,7 +107,7 @@ function addFolderBySessionId(session, id, parentRoute, folderName, callback) {
 
             getStorageRecordByUser(user, function (err, record) {
                 var storage = record.storage;
-                var parentFolder = findParent(storage, parentRoute);
+                var parentFolder = findFolder(storage, parentRoute);
                 if (parentFolder) {
                     var folder = {
                         name: folderName,
@@ -137,7 +127,6 @@ function addFolderBySessionId(session, id, parentRoute, folderName, callback) {
         }
     }, errorOccurs);
 }
-module.exports.addFolderBySessionId = addFolderBySessionId;
 
 module.exports.addFolder = function (session, req, parentRoute, folderName, callback) {
     var getStorageRecordWrapper = Rx.Observable.fromNodeCallback(getStorageRecord);
@@ -146,7 +135,7 @@ module.exports.addFolder = function (session, req, parentRoute, folderName, call
         function (record) {
             if (record) {
                 var storage = record.storage;
-                var parentFolder = findParent(storage, parentRoute);
+                var parentFolder = findFolder(storage, parentRoute);
                 if (parentFolder) {
                     var folder = {
                         name: folderName,
@@ -183,7 +172,7 @@ function addFileBySessionId(session, id, parentRoute, file, callback) {
             var user = JSON.parse(reply);
             getStorageRecordByUser(user, function (err, record) {
                 var storage = record.storage;
-                var parentFolder = findParent(storage, parentRoute);
+                var parentFolder = findFolder(storage, parentRoute);
                 if (parentFolder) {
                     file.mime = mimeUtils.lookup(file.name);
                     file.modified = moment().format("M/D/YYYY h:mm A");
@@ -198,16 +187,15 @@ function addFileBySessionId(session, id, parentRoute, file, callback) {
         }
     }, errorOccurs);
 }
-module.exports.addFileBySessionId = addFileBySessionId;
 
-module.exports.addFile = function (session, req, parentRoute, file, callback) {
+function addFile(session, req, parentRoute, file, callback) {
     var getStorageRecordWrapper = Rx.Observable.fromNodeCallback(getStorageRecord);
     var getStorageRecordSync = getStorageRecordWrapper(session, req);
     getStorageRecordSync.subscribe(
         function (record) {
             if (record) {
                 var storage = record.storage;
-                var parentFolder = findParent(storage, parentRoute);
+                var parentFolder = findFolder(storage, parentRoute);
                 if (parentFolder) {
                     file.mime = mimeUtils.lookup(file.name);
                     file.modified = moment().format("M/D/YYYY h:mm A");
@@ -220,5 +208,49 @@ module.exports.addFile = function (session, req, parentRoute, file, callback) {
                 }
             }
         }, errorOccurs);
-};
+}
+
+/*
+ find folder by route
+ */
+function findFolder(storage, route) {
+    if (!_.isArray(storage) && storage.route === route)
+        return storage;
+    else {
+        var folders = storage.folders;
+        if (folders && folders.length > 0) {
+            for (var j = 0, len2 = folders.length; j < len2; j++) {
+                if (folders[j].route === route) {
+                    return folders[j];
+                }
+                var result = findFolder(folders[j].folders, route);
+                if (result)
+                    return result;
+            }
+        }
+    }
+    return null;
+}
+/*
+ @route e.g. /1.file or /picture/1.file
+ find file by route
+ */
+function findFile(storage, route) {
+    var endIndex = route.lastIndexOf('/');
+    if (endIndex > -1) {
+        var folderRoute = route.substring(0, endIndex || 1);
+        console.log('folderRoute:', folderRoute);
+        var folder = findFolder(storage, folderRoute);
+        console.log('folder:', folder);
+        if (folder) {
+            var fileName = route.substring(endIndex + 1);
+            console.log('fileName:', fileName);
+            var file = _.find(folder.files, function (file) {
+                return file.name === fileName
+            });
+            return file;
+        }
+    }
+    return null;
+}
 
