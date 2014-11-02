@@ -3,7 +3,8 @@
 
     storageApp.factory('DataService', [function () {
         return {
-            data: JSON.parse($('#storageData').val())
+            data: JSON.parse($('#storageData').val()),
+            changeData: function(storage){ $('#storageData').val(JSON.stringify(storage));}
         };
     }]);
 
@@ -57,7 +58,6 @@
                 $scope.binding($scope.model.currentFolder);
 
                 $scope.writeLinkPaths();
-
             };
 
             $scope.model = DataService.data;
@@ -81,6 +81,24 @@
             $scope.addFile = function (file) {
                 $scope.model.currentFolder.files.push(file);
                 $scope.$apply();
+            };
+            $scope.remove = function (resourceType, name){
+                var collection =  resourceType === 'folder' ? $scope.model.currentFolder.folders : $scope.model.currentFolder.files;
+                var index = -1;
+                for(var i = 0, len = collection.length; i<len;i++){
+                    if(collection[i].name === name){
+                        index = i;
+                        break;
+                    }
+                }
+                if(index > -1){
+                    collection.splice(i, 1);
+                    $scope.$apply();
+                }
+            };
+            $scope.changeModel = function(storage){
+                DataService.changeData(storage);
+                $scope.model = DataService.data;
             };
 
             // url changed
@@ -282,6 +300,7 @@
                     'CurrentPath': currentPath,
                     'ResourceType': resourceType,
                     'SessionId': $.cookie('session_id')});
+                getAngularScope().remove(resourceType, name);
             });
         } else {
             $('#fileName').html('Your browser does not support the File API. please change a newer browser.');
