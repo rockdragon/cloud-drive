@@ -4,7 +4,10 @@
     var debug = require('debug')('cloud-drive');
 //    var sticky = require('sticky-session');
     var app = require('../app');
-    app.set('port', process.env.PORT || 3000);
+    var port = 3000;
+    if(process.argv.length > 2) // node www 3000
+        port = process.argv[2];
+    app.set('port', port);
 
 //    //CPU几核？
 //    var cpus = require('os').cpus().length;
@@ -66,7 +69,7 @@
         upload = require('../modules/upload/upload');
     var server = http.createServer(app);
     upload.bind(server);
-    console.log('worker pid: ' + process.pid);
+    console.log('worker pid: ' , process.pid , ', listening on port:', port);
     return server.listen(app.get('port'), function () {
         debug('Express server listening on port ' + app.get('port'));
     });
