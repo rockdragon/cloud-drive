@@ -158,22 +158,22 @@ module.exports.bind = function (server) {
             var route = resourceType === 'folder' ? path.join(currentPath, data.Name) : data.Name;
             console.log('delete route:', currentPath, route);
 
-//            userUtils.getUserById(session, sessionId, function (err, reply) {
-//                if (reply) {
-//                    var user = JSON.parse(reply);
-//                    //physical delete
-//                    shareUtils.getSpecificStorage(user.userType, user.userId, resourceType, route,
-//                        function (err, resource) {
-//                            if (resource) {
-//                                pathUtils.deleteTreeSync(resource.path);
-//                            }
-//                        });
-//                    //storage delete
-//                    storageUtils.deleteResourceById(session, sessionId, currentPath, route, resourceType,
-//                        function (err) {
-//                        });
-//                }
-//            });
+            userUtils.getUserById(session, sessionId, function (err, reply) {
+                if (reply) {
+                    var user = JSON.parse(reply);
+                    //physical delete
+                    shareUtils.getSpecificStorage(user.userType, user.userId, resourceType, route,
+                        function (err, resource) {
+                            if (resource) {
+                                pathUtils.deleteTreeSync(resource.path);
+                            }
+                        });
+                    //storage delete
+                    storageUtils.deleteResourceById(session, sessionId, currentPath, route, resourceType,
+                        function (err) {
+                        });
+                }
+            });
         });
 
         socket.on('shareLink', function (data) {
