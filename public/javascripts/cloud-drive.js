@@ -119,11 +119,19 @@
         $('#uploader').modal('hide');
     };
     var showConfirm = function (name) {
-        $('#confirmRouteName').text(name);
+        $('#confirmName').text(name);
+        $('#deleteName').val(name);
         $('#confirm').modal();
     };
     var hideConfirm= function () {
         $('#confirm').modal('hide');
+    };
+    var contextMenuHandle = function(key, options, type){
+        var resourceName = options.$trigger[0].id.split('_')[1];
+        if(key === 'delete'){
+            $('#deleteType').val(type);
+            showConfirm(resourceName);
+        }
     };
 
     //HTML File detection
@@ -136,10 +144,7 @@
         $.contextMenu({ // folder Context Menu
             selector: '.lineFolder',
             callback: function (key, options) {
-                if(key === 'delete'){
-                    $('#deleteRoute').val(target_id);
-                    showConfirm(target_id);
-                }
+                contextMenuHandle(key, options, 'folder');
             },
             items: {
                 "share": {name: "Share Link", icon: "copy"},
@@ -151,11 +156,7 @@
         $.contextMenu({ // file Context Menu
             selector: '.lineFile',
             callback: function (key, options) {
-                var target_id = options.$trigger[0].id.split('_')[1];
-                if(key === 'delete'){
-                    $('#deleteRoute').val(target_id);
-                    showConfirm(target_id);
-                }
+                contextMenuHandle(key, options, 'file');
             },
             items: {
                 "share": {name: "Share Link", icon: "copy"},
@@ -273,8 +274,14 @@
 
             // Resource deletion
             $('#sureDelete').click(function(){
-                var name = $('#deleteRoute').val();
-                
+                var currentPath = getAngularScope().model.currentFolder.route;
+                var name = $('#deleteName').val();
+                var resourceType = $('#deleteType').val();
+
+                socket.emit('delete', { 'Name': name,
+                    'CurrentPath': currentPath,
+                    'ResourceType': resourceType,
+                    'SessionId': $.cookie('session_id')});
             });
         } else {
             $('#fileName').html('Your browser does not support the File API. please change a newer browser.');
