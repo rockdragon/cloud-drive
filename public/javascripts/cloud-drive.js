@@ -125,7 +125,7 @@
     // generate socket connection
     var socketClient = function () {
         var port = $('#port').val();
-        var socket = io.connect('http://127.0.0.1:' + port);
+        var socket = io.connect('127.0.0.1:' + port);
         socket.send('client message');
         socket.on('message', function (time) {
             console.log('received server timestamp:' + time);

@@ -26,7 +26,8 @@
     "upload_setting":{
         "win32" : "D:\files",
         "linux": "/var/files"
-    }
+    },
+    "SERVER_TYPE": "https"
 }
 ```
 #### License
