@@ -138,6 +138,7 @@
     };
     var hideDialog = function () {
         $('#uploader').modal('hide');
+        updateProgressBar(0);
     };
     var showConfirm = function (name) {
         $('#confirmName').text(name);
