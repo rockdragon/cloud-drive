@@ -6,6 +6,7 @@ var storageUtils = require('../storage/storageUtils');
 var session = require('../sessions/sessionUtils');
 var moment = require('moment');
 var mimeUtils = require('../mime/mimeUtils');
+var shareUtils = require('../storage/shareUtils');
 
 module.exports.bind = function (server) {
     var Files = {};
@@ -149,13 +150,36 @@ module.exports.bind = function (server) {
         });
 
         //deleting folder or file
-        socket.on('delete', function(data){
+        socket.on('delete', function (data) {
             var sessionId = data.SessionId;
-            var dirPath = data.DirPath;
+            var currentPath = data.CurrentPath;
+            var route = data.DirPath;
+            var resourceType = data.ResourceType;
 
+            userUtils.getUserById(session, sessionId, function (err, reply) {
+                if (reply) {
+                    var user = JSON.parse(reply);
+                    //physical delete
+                    shareUtils.getSpecificStorage(user.userType, user.userId, resourceType, route,
+                        function (err, resource) {
+                            if (resource) {
+                                pathUtils.deleteTreeSync(resource.path);
+                            }
+                        });
+                    //storage delete
+                    storageUtils.deleteResourceById(session, sessionId, currentPath, route, resourceType,
+                        function (err) {
+                        });
+                }
+            });
         });
 
-        socket.on('shareLink', function(data){
+        socket.on('shareLink', function (data) {
+            var sessionId = data.SessionId;
+            var dirPath = data.DirPath;
+        });
+
+        socket.on('rename', function (data) {
             var sessionId = data.SessionId;
             var dirPath = data.DirPath;
         });

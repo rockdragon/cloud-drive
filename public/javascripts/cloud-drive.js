@@ -118,6 +118,13 @@
     var hideDialog = function () {
         $('#uploader').modal('hide');
     };
+    var showConfirm = function (name) {
+        $('#confirmRouteName').text(name);
+        $('#confirm').modal();
+    };
+    var hideConfirm= function () {
+        $('#confirm').modal('hide');
+    };
 
     //HTML File detection
     window.addEventListener('load', ready);
@@ -126,10 +133,13 @@
         $('#storageTable').show();
 
         // context menu
-        $.contextMenu({
+        $.contextMenu({ // folder Context Menu
             selector: '.lineFolder',
             callback: function (key, options) {
-                console.log(key + ' on ' + options.$trigger[0].id);
+                if(key === 'delete'){
+                    $('#deleteRoute').val(target_id);
+                    showConfirm(target_id);
+                }
             },
             items: {
                 "share": {name: "Share Link", icon: "copy"},
@@ -138,10 +148,14 @@
                 "delete": {name: "Delete", icon: "delete"}
             }
         });
-        $.contextMenu({
+        $.contextMenu({ // file Context Menu
             selector: '.lineFile',
             callback: function (key, options) {
-                console.log(key + ' on ' + options.$trigger[0].id);
+                var target_id = options.$trigger[0].id.split('_')[1];
+                if(key === 'delete'){
+                    $('#deleteRoute').val(target_id);
+                    showConfirm(target_id);
+                }
             },
             items: {
                 "share": {name: "Share Link", icon: "copy"},
@@ -227,12 +241,12 @@
                 showDialog();
             });
 
+            // Folder creation
             $('#new_folder_button').click(function () {
                 $('#folderNameLine').show();
                 $('#folderName').focus();
             });
 
-            // Folder creation
             var folderNameHandle = function (folderName) {
                 if (!folderName) {
                     showErrorMessage('请为新文件夹命名');
@@ -255,6 +269,12 @@
                 if (e.keyCode == 13) {
                     $(this).blur();
                 }
+            });
+
+            // Resource deletion
+            $('#sureDelete').click(function(){
+                var name = $('#deleteRoute').val();
+                
             });
         } else {
             $('#fileName').html('Your browser does not support the File API. please change a newer browser.');

@@ -7798,11 +7798,11 @@ ul.horizontal li {
 }
 #pathLinks > li + li:before {
     content: "/\00a0";
-    padding: 0 5px;
+    padding: 0 2px;
     color: #cccccc;
 }
-/* uploader */
-#uploader{
+/* modal dialog */
+#uploader, #confirm{
     position: fixed;
     top: 90px;
 }

@@ -10,10 +10,10 @@ router.route('/:link').get(function (req, res) {
         var descriptor = shareUtils.fromSharedLinkSync(link);
         if (descriptor) {//{userType, userId, storageType, route}
             shareUtils.getSpecificStorage(
-                descriptor.userType, descriptor.userId, descriptor.storageType, descriptor.route,
+                descriptor.userType, descriptor.userId, descriptor.resourceType, descriptor.route,
                 function (err, resource) {
                     if (resource) {//folder or file
-                        var title = 'Shared ' + descriptor.storageType + ': ' + resource.name;
+                        var title = 'Shared ' + descriptor.resourceType + ': ' + resource.name;
                         if (descriptor.storageType === 'file')
                             resource = {
                                 files: [resource],

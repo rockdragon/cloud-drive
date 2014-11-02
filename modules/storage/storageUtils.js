@@ -23,6 +23,7 @@ module.exports.getStorageRecord = getStorageRecord;
 module.exports.addFolderBySessionId = addFolderBySessionId;
 module.exports.addFileBySessionId = addFileBySessionId;
 module.exports.addFile = addFile;
+module.exports.deleteResourceById = deleteResourceById;
 module.exports.findFolder = findFolder;
 module.exports.findFile = findFile;
 
@@ -239,12 +240,9 @@ function findFile(storage, route) {
     var endIndex = route.lastIndexOf('/');
     if (endIndex > -1) {
         var folderRoute = route.substring(0, endIndex || 1);
-        console.log('folderRoute:', folderRoute);
         var folder = findFolder(storage, folderRoute);
-        console.log('folder:', folder);
         if (folder) {
             var fileName = route.substring(endIndex + 1);
-            console.log('fileName:', fileName);
             var file = _.find(folder.files, function (file) {
                 return file.name === fileName
             });
@@ -252,5 +250,38 @@ function findFile(storage, route) {
         }
     }
     return null;
+}
+
+/*
+ delete specific resource from storage
+ @resourceType file/folder
+ */
+function deleteResourceById(session, id, parentRoute, route, resourceType, callback){
+    var getUserByIdAsync = getUserById(session, id);
+    getUserByIdAsync.subscribe(function (reply) {
+        if (reply) {
+            var user = JSON.parse(reply);
+            getStorageRecordByUser(user, function (err, record) {
+                var storage = record.storage;
+                var parentFolder = findFolder(storage, parentRoute);
+                if (parentFolder) {
+                    var collection = resourceType === 'folder' ? parentFolder.folders : parentFolder.files;
+                    var index = -1;
+                    for(var j = 0, len = collection.length; j<len;j++){
+                        if(collection[j].route === route) {
+                            index = j;
+                            break;
+                        }
+                    }
+                    if(index > -1) {
+                        collection.splice(index, 1);
+                        saveStorageByUser(user, storage, function (err) {
+                            callback(err);
+                        });
+                    }
+                }
+            });
+        }
+    }, errorOccurs);
 }
 
