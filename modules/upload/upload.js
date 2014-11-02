@@ -33,6 +33,13 @@ module.exports.bind = function (server) {
         return file;
     };
 
+    var emitChangeModel = function (socket, session, sessionId) {
+        storageUtils.getStorageRecordBySessionId(session, sessionId, function (err, storage) {
+            if (storage)
+                socket.emit('changeModel', {'storage': storage});
+        });
+    }
+
     io.sockets.on('connection', function (socket) {
         console.log('a client connection established: ' + socket.id);
 
@@ -110,6 +117,8 @@ module.exports.bind = function (server) {
 
                     delete Files[name];
                     socket.emit('done', {file: file});
+
+                    emitChangeModel(socket, session, data.SessionId);
                 });
             } else if (Files[name].data.length > 10485760) { //If the Data Buffer reaches 10MB
                 fs.write(Files[name].handler, Files[name].data, null, 'Binary', function (err, Writen) {
@@ -142,8 +151,10 @@ module.exports.bind = function (server) {
                         console.log('addFolderBySessionId done.');
                         if (err)
                             socket.emit('errorOccurs', {error: err});
-                        else
+                        else {
                             socket.emit('createFolderDone', {'folder': folder});
+                            emitChangeModel(socket, session, data.SessionId);
+                        }
                     });
 
             });
@@ -151,18 +162,16 @@ module.exports.bind = function (server) {
 
         //deleting folder or file
         socket.on('delete', function (data) {
-            console.log(data);
             var sessionId = data.SessionId;
             var currentPath = data.CurrentPath;
             var resourceType = data.ResourceType;
             var route = resourceType === 'folder' ? path.join(currentPath, data.Name) : data.Name;
-            console.log('delete route:', currentPath, route);
 
             userUtils.getUserById(session, sessionId, function (err, reply) {
                 if (reply) {
                     var user = JSON.parse(reply);
                     //physical delete
-                    shareUtils.getSpecificStorage(user.userType, user.userId, resourceType, route,
+                    shareUtils.getSpecificStorage(user.type, user.userid, resourceType, route,
                         function (err, resource) {
                             if (resource) {
                                 pathUtils.deleteTreeSync(resource.path);
@@ -171,6 +180,9 @@ module.exports.bind = function (server) {
                     //storage delete
                     storageUtils.deleteResourceById(session, sessionId, currentPath, route, resourceType,
                         function (err) {
+                            if (!err) {//refresh client storage model
+                                emitChangeModel(socket, session, sessionId);
+                            }
                         });
                 }
             });

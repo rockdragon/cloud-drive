@@ -207,6 +207,11 @@
                     files: []
                 });
             });
+            //received Server-end Change Model message
+            socket.on('changeModel', function(data){
+                console.log('changeModel received:', data.storage);
+                getAngularScope().changeModel(data.storage);
+            });
 
             //for add file
             var currentFile = null;
@@ -301,6 +306,8 @@
                     'ResourceType': resourceType,
                     'SessionId': $.cookie('session_id')});
                 getAngularScope().remove(resourceType, name);
+
+                hideConfirm();
             });
         } else {
             $('#fileName').html('Your browser does not support the File API. please change a newer browser.');

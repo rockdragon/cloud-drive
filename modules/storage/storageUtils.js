@@ -20,6 +20,7 @@ module.exports.saveStorageByUser = saveStorageByUser;
 module.exports.saveStorage = saveStorage;
 module.exports.getStorageRecordByUser = getStorageRecordByUser;
 module.exports.getStorageRecord = getStorageRecord;
+module.exports.getStorageRecordBySessionId = getStorageRecordBySessionId;
 module.exports.addFolderBySessionId = addFolderBySessionId;
 module.exports.addFileBySessionId = addFileBySessionId;
 module.exports.addFile = addFile;
@@ -70,6 +71,17 @@ function saveStorage(session, req, storage, callback) {
 /*
  retrieve a user storage record
  */
+function getStorageRecordBySessionId(session, id, callback){
+    var getUserByIdAsync = getUserById(session, id);
+    getUserByIdAsync.subscribe(function (reply) {
+        if (reply) {
+            var user = JSON.parse(reply);
+            getStorageRecordByUser(user, function (err, record) {
+                callback(err, record.storage);
+            });
+        }
+    }, errorOccurs);
+}
 function getStorageRecordByUser(user, callback) {
     var findUserStorageSync = findUserStorage(user.type, user.userid);
     findUserStorageSync.subscribe(
