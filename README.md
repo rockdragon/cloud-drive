@@ -27,6 +27,10 @@
         "win32" : "D:\files",
         "linux": "/var/files"
     },
+    "certs":{
+            "key":  "/Users/moye/certs/2_www.fun4.tv.key",
+            "cert": "/Users/moye/certs/1_www.fun4.tv_bundle.crt"
+         },
     "SERVER_TYPE": "https"
 }
 ```
