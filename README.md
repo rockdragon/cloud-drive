@@ -9,6 +9,7 @@
     [
        {"address": "127.0.0.1", "port": "6379"}
     ],
+    "SITE_ROOT": "http://localhost:3000/",
     "GOOGLE_CLIENT_ID" : "xxxx.apps.googleusercontent.com",
     "GOOGLE_CLIENT_SECRET" : "wdsfas3_-safdsafasf",
     "GOOGLE_RETURN_URL" : "http://www.xxx.com/auth/google/return",

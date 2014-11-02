@@ -1,5 +1,6 @@
 var fs = require('fs');
 var path = require('path');
+var config = require('../config/configUtils');
 var userUtils = require('../auth/userUtils');
 var pathUtils = require('./pathUtils');
 var storageUtils = require('../storage/storageUtils');
@@ -38,7 +39,7 @@ module.exports.bind = function (server) {
             if (storage)
                 socket.emit('changeModel', {'storage': storage});
         });
-    }
+    };
 
     io.sockets.on('connection', function (socket) {
         console.log('a client connection established: ' + socket.id);
@@ -188,14 +189,25 @@ module.exports.bind = function (server) {
             });
         });
 
-        socket.on('shareLink', function (data) {
+        socket.on('share', function (data) {
             var sessionId = data.SessionId;
-            var dirPath = data.DirPath;
+            var currentPath = data.CurrentPath;
+            var resourceType = data.ResourceType;
+            var route = resourceType === 'folder' ? path.join(currentPath, data.Name) : data.Name;
+
+            userUtils.getUserById(session, sessionId, function (err, reply) {
+                if (reply) {
+                    var user = JSON.parse(reply);
+                    var link = shareUtils.generateShareLinkSync(user.type, user.userid, resourceType, route);
+                    link = config.getConfigs().SITE_ROOT + 'share/' + link;
+                    socket.emit('shareLink', {'name': data.Name, 'link': link});
+                }
+            });
         });
 
         socket.on('rename', function (data) {
             var sessionId = data.SessionId;
-            var dirPath = data.DirPath;
+            var currentPath = data.CurrentPath;
         });
     });
 };

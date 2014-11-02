@@ -4,7 +4,9 @@
     storageApp.factory('DataService', [function () {
         return {
             data: JSON.parse($('#storageData').val()),
-            changeData: function(storage){ $('#storageData').val(JSON.stringify(storage));}
+            changeData: function (storage) {
+                $('#storageData').val(JSON.stringify(storage));
+            }
         };
     }]);
 
@@ -82,21 +84,21 @@
                 $scope.model.currentFolder.files.push(file);
                 $scope.$apply();
             };
-            $scope.remove = function (resourceType, name){
-                var collection =  resourceType === 'folder' ? $scope.model.currentFolder.folders : $scope.model.currentFolder.files;
+            $scope.remove = function (resourceType, name) {
+                var collection = resourceType === 'folder' ? $scope.model.currentFolder.folders : $scope.model.currentFolder.files;
                 var index = -1;
-                for(var i = 0, len = collection.length; i<len;i++){
-                    if(collection[i].name === name){
+                for (var i = 0, len = collection.length; i < len; i++) {
+                    if (collection[i].name === name) {
                         index = i;
                         break;
                     }
                 }
-                if(index > -1){
+                if (index > -1) {
                     collection.splice(i, 1);
                     $scope.$apply();
                 }
             };
-            $scope.changeModel = function(storage){
+            $scope.changeModel = function (storage) {
                 DataService.changeData(storage);
                 $scope.model = DataService.data;
             };
@@ -141,14 +143,30 @@
         $('#deleteName').val(name);
         $('#confirm').modal();
     };
-    var hideConfirm= function () {
+    var hideConfirm = function () {
         $('#confirm').modal('hide');
     };
-    var contextMenuHandle = function(key, options, type){
+    var showShare = function (name, link) {
+        $('.shareName').text(name);
+        $('#shareLink').val(link);
+        $('#shareHref').attr('href', link);
+        $('#share').modal();
+        $('#shareLink').select();
+    };
+    var contextMenuHandle = function (key, options, type) {
+        console.log(key, options);
         var resourceName = options.$trigger[0].id.split('_')[1];
-        if(key === 'delete'){
+        if (key === 'delete') {
             $('#deleteType').val(type);
             showConfirm(resourceName);
+        }
+        if (key === 'share') {
+            var shareInfo = {
+                'shareName': resourceName,
+                'shareType': type
+            };
+            $('#shareInfo').val(JSON.stringify(shareInfo));
+            $('#shareInfo').click();
         }
     };
 
@@ -208,9 +226,14 @@
                 });
             });
             //received Server-end Change Model message
-            socket.on('changeModel', function(data){
+            socket.on('changeModel', function (data) {
                 console.log('changeModel received:', data.storage);
                 getAngularScope().changeModel(data.storage);
+            });
+            //received share link
+            socket.on('shareLink', function (data) {
+                console.log('shareLink received:', data.name, data.link);
+                showShare(data.name, data.link);
             });
 
             //for add file
@@ -296,7 +319,7 @@
             });
 
             // Resource deletion
-            $('#sureDelete').click(function(){
+            $('#sureDelete').click(function () {
                 var currentPath = getAngularScope().model.currentFolder.route;
                 var name = $('#deleteName').val();
                 var resourceType = $('#deleteType').val();
@@ -308,6 +331,16 @@
                 getAngularScope().remove(resourceType, name);
 
                 hideConfirm();
+            });
+
+            // Resource sharing
+            $('#shareInfo').click(function () {
+                var shareInfo = JSON.parse($(this).val());
+                socket.emit('share', { 'Name': shareInfo.shareName,
+                    'ResourceType': shareInfo.shareType,
+                    'SessionId': $.cookie('session_id'),
+                    'CurrentPath': getAngularScope().model.currentFolder.route
+                });
             });
         } else {
             $('#fileName').html('Your browser does not support the File API. please change a newer browser.');
