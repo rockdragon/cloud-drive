@@ -302,8 +302,8 @@
                 } else {
                     var folder = {
                         'SessionId': $.cookie('session_id'),
-                        'name': folderName,
-                        'parent': getAngularScope().model.currentFolder.route
+                        'Name': folderName,
+                        'Parent': getAngularScope().model.currentFolder.route
                     };
                     console.log(folder);
                     socket.emit('createFolder', folder);

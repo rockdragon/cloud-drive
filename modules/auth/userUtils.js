@@ -47,7 +47,7 @@ function getUserRootPathByUser(user) {
 module.exports.getUserRootPathByUser = getUserRootPathByUser;
 
 function getUserRootPath(sessionId, callback) {
-    getUser(sessionUtils, sessionId, function (err, reply) {
+    getUserById(sessionUtils, sessionId, function (err, reply) {
         if (err)
             console.log(err);
         var uploadPath = '/tmp/';

@@ -141,8 +141,11 @@ module.exports.bind = function (server) {
 
         //starting folder creation
         socket.on('createFolder', function (data) {
-            userUtils.getUserRootPath(data.SessionId, function (err, rootPath) {
-                var folderPath = path.join(rootPath, data.parent, data.name);
+            var name = data.Name;
+            var sessionId = data.SessionId;
+            var currentPath = data.Parent;
+            userUtils.getUserRootPath(sessionId, function (err, rootPath) {
+                var folderPath = path.join(rootPath, currentPath, name);
                 console.log('folderPath: ' + folderPath);
                 if (!fs.existsSync(folderPath)) {
                     pathUtils.mkdirAbsoluteSync(folderPath);
