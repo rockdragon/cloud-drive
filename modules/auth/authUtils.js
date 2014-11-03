@@ -56,8 +56,8 @@ passport.use(new DoubanStrategy({
         var userInfo = {
             'type': 'douban',
             'userid': profile.id,
-            'name': profile.name,
-            'email': profile.email,
+            'name': profile.displayName,
+            'email': profile.profileUrl,
             'avatar': profile.avatar
         };
         return done(null, userInfo);
@@ -74,8 +74,8 @@ passport.use(new GithubStrategy({
         var userInfo = {
             'type': 'github',
             'userid': profile.id,
-            'name': profile.name,
-            'email': profile.alt,
+            'name': profile.displayName,
+            'email': profile.emails[0].value,
             'avatar': profile.avatar
         };
         return done(null, userInfo);
