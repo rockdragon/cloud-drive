@@ -155,14 +155,14 @@ module.exports.bind = function (server) {
                 if (!fs.existsSync(folderPath)) {// not exists
                     pathUtils.mkdirAbsoluteSync(folderPath);
 
-                    storageUtils.addFolderBySessionId(session, data.SessionId, data.Parent, data.name,
+                    storageUtils.addFolderBySessionId(session, sessionId, currentPath, name,
                         function (err, folder) {
                             console.log('addFolderBySessionId done.');
                             if (err)
                                 socket.emit('errorOccurs', {error: err});
                             else {
                                 socket.emit('createFolderDone', {'folder': folder});
-                                emitChangeModel(socket, session, data.SessionId);
+                                emitChangeModel(socket, session, sessionId);
                             }
                         });
                 } else {
