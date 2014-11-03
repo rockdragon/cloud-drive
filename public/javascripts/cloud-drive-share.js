@@ -60,6 +60,7 @@
             };
 
             $scope.bindingWithPath = function (currentPath) {
+                $log.log('bindingWithPath:',currentPath);
                 if ($scope.model.currentFolder.route !== currentPath) {
                     $scope.model.currentFolder = $scope.findFolder($scope.model, currentPath);
                     $log.log('found: ', $scope.model.currentFolder);

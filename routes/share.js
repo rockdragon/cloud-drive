@@ -14,7 +14,7 @@ router.route('/:link').get(function (req, res) {
                 function (err, resource) {
                     if (resource) {//folder or file
                         var title = 'Shared ' + descriptor.resourceType + ': ' + resource.name;
-                        if (descriptor.storageType === 'file')
+                        if (descriptor.resourceType === 'file')
                             resource = {
                                 files: [resource],
                                 folders: [],
@@ -22,7 +22,7 @@ router.route('/:link').get(function (req, res) {
                                 path: "/Share",
                                 name: "share"
                             };
-                        console.log('resource:', resource);
+                        console.log('resource', resource);
                         return res.render('share/share', {title: title, storage: resource,
                             rootUrl: resource.route});
                     } else
