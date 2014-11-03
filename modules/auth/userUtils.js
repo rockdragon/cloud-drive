@@ -28,7 +28,7 @@ function getUserById(session, id, callback) {
             return callback(err, reply);
         });
     }
-};
+}
 /*
  get current user
  */

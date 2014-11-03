@@ -155,7 +155,7 @@ module.exports.bind = function (server) {
                 if (!fs.existsSync(folderPath)) {// not exists
                     pathUtils.mkdirAbsoluteSync(folderPath);
 
-                    storageUtils.addFolderBySessionId(session, data.SessionId, data.parent, data.name,
+                    storageUtils.addFolderBySessionId(session, data.SessionId, data.Parent, data.name,
                         function (err, folder) {
                             console.log('addFolderBySessionId done.');
                             if (err)
