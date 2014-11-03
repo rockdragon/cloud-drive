@@ -64,7 +64,7 @@ function getUserRootPath(sessionId, callback) {
 
 
 function logOutUser(session, req, callback){
-    var id = req.cookies[config.getConfigs().session_key];
+    var id = req.cookies[configUtils.getConfigs().session_key];
     if (id) {
         session.deleteById(id, 'user', function (err) {
             if(err)
