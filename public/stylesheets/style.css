@@ -7645,6 +7645,7 @@ button.close {
     -webkit-background-size: auto 20px;
     background-size: auto 20px;
 }
+.avatar{max-width:120px;max-height:120px;}
 .btn-sn-google {
     background: #4285F4;
 }
