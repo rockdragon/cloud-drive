@@ -61,12 +61,17 @@ module.exports.bind = function (server) {
 
             //combine path
             userUtils.getUserRootPath(sessionId, function (err, userRootPath) {
+                var filePath = path.join(userRootPath, currentPath, name);
+                if(fs.existsSync(filePath)){
+                    socket.emit('errorOccurs', {error: 'File exists already.'});
+                    return;
+                }
                 Files[name] = { // define storage structure
                     fileSize: size,
                     data: '',
                     downloaded: 0,
                     handler: null,
-                    filePath: path.join(userRootPath, currentPath, name),
+                    filePath: filePath,
                     parent: currentPath,
                     sessionId: sessionId
                 };
@@ -87,7 +92,7 @@ module.exports.bind = function (server) {
                 } catch (err) {
                 }
                 var filePathAbsolute = path.dirname(Files[name].filePath);
-                if (!fs.exists(filePathAbsolute)) { //ensure directory exist
+                if (!fs.existsSync(filePathAbsolute)) { //ensure directory exist
                     pathUtils.mkdirAbsoluteSync(filePathAbsolute);
                 }
                 fs.open(Files[name].filePath, 'a', 0755, function (err, fd) {
@@ -147,20 +152,22 @@ module.exports.bind = function (server) {
             userUtils.getUserRootPath(sessionId, function (err, rootPath) {
                 var folderPath = path.join(rootPath, currentPath, name);
                 console.log('folderPath: ' + folderPath);
-                if (!fs.existsSync(folderPath)) {
+                if (!fs.existsSync(folderPath)) {// not exists
                     pathUtils.mkdirAbsoluteSync(folderPath);
-                }
-                storageUtils.addFolderBySessionId(session, data.SessionId, data.parent, data.name,
-                    function (err, folder) {
-                        console.log('addFolderBySessionId done.');
-                        if (err)
-                            socket.emit('errorOccurs', {error: err});
-                        else {
-                            socket.emit('createFolderDone', {'folder': folder});
-                            emitChangeModel(socket, session, data.SessionId);
-                        }
-                    });
 
+                    storageUtils.addFolderBySessionId(session, data.SessionId, data.parent, data.name,
+                        function (err, folder) {
+                            console.log('addFolderBySessionId done.');
+                            if (err)
+                                socket.emit('errorOccurs', {error: err});
+                            else {
+                                socket.emit('createFolderDone', {'folder': folder});
+                                emitChangeModel(socket, session, data.SessionId);
+                            }
+                        });
+                } else {
+                    socket.emit('errorOccurs', {error: 'Folder exists already.'});
+                }
             });
         });
 

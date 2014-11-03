@@ -117,11 +117,6 @@
         return angular.element(appElement).scope();
     };
 
-    // show error then fade out
-    var showErrorMessage = function (msg) {
-        $('#folderNameLabel').text(msg).show().fadeOut(3000);
-    };
-
     // generate socket connection
     var socketClient = function () {
         var port = $('#port').val();
@@ -150,10 +145,15 @@
     };
     var showShare = function (name, link) {
         $('.shareName').text(name);
-        $('#shareLink').val(link);
         $('#shareHref').attr('href', link);
         $('#share').modal();
-        $('#shareLink').select();
+        $('#shareLink').val(link).select();
+    };
+    // show error then fade out
+    var showErrorMessage = function (msg) {
+        hideDialog();
+        hideConfirm();
+        $('#folderNameLabel').text(msg).show().fadeOut(5000);
     };
     var contextMenuHandle = function (key, options, type) {
         console.log(key, options);
@@ -167,8 +167,10 @@
                 'shareName': resourceName,
                 'shareType': type
             };
-            $('#shareInfo').val(JSON.stringify(shareInfo));
-            $('#shareInfo').click();
+            $('#shareInfo').val(JSON.stringify(shareInfo)).click();
+        }
+        if (key === 'rename') {
+            
         }
     };
 
