@@ -2,6 +2,12 @@ var configUtils = require('../config/configUtils');
 var sessionUtils = require('../sessions/sessionUtils');
 var path = require('path');
 
+module.exports.getUserRootPath = getUserRootPath;
+module.exports.getUserById = getUserById;
+module.exports.getUser = getUser;
+module.exports.getUserRootPathByUser = getUserRootPathByUser;
+module.exports.logOutUser = logOutUser;
+
 function generateDevUser() {
     return JSON.stringify({
         'type': 'development',
@@ -23,7 +29,6 @@ function getUserById(session, id, callback) {
         });
     }
 };
-module.exports.getUserById = getUserById;
 /*
  get current user
  */
@@ -35,16 +40,14 @@ function getUser(session, req, callback) {
             return callback(err, reply);
         });
     }
-};
-module.exports.getUser = getUser;
+}
 
 /*
  get user upload path
  */
 function getUserRootPathByUser(user) {
     return path.join(configUtils.getUploadRoot(), user.type, user.userid.toString());
-};
-module.exports.getUserRootPathByUser = getUserRootPathByUser;
+}
 
 function getUserRootPath(sessionId, callback) {
     getUserById(sessionUtils, sessionId, function (err, reply) {
@@ -57,7 +60,19 @@ function getUserRootPath(sessionId, callback) {
         console.log(uploadPath);
         callback(err, uploadPath);
     });
-};
-module.exports.getUserRootPath = getUserRootPath;
+}
+
+
+function logOutUser(session, req, callback){
+    var id = req.cookies[config.getConfigs().session_key];
+    if (id) {
+        session.deleteById(id, 'user', function (err) {
+            if(err)
+                console.log('logOutUser err:', err);
+            callback(err);
+        });
+    } else
+        callback(null);
+}
 
 
