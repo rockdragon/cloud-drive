@@ -5,8 +5,10 @@
 //    var sticky = require('sticky-session');
     var app = require('../app');
     process.env.port = 3000;
-    if (process.argv.length > 2) // node www 3000
-        process.env.port = process.argv[2];
+    var portArgvIndex = 2;
+    if (process.argv.length > portArgvIndex) // node www 3000 or pm2 start www 3001
+        process.env.port = process.argv[0] === 'node' ?
+            process.argv[portArgvIndex] : process.argv[portArgvIndex + 1];
     app.set('port', process.env.port);
 
 //    //CPU几核？
