@@ -76,7 +76,7 @@ passport.use(new GithubStrategy({
             'userid': profile.id,
             'name': profile.displayName,
             'email': profile.emails[0].value,
-            'avatar': profile.avatar
+            'avatar': profile._json.avatar_url
         };
         return done(null, userInfo);
     }
