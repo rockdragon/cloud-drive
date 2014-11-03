@@ -204,7 +204,8 @@ module.exports.bind = function (server) {
             var sessionId = data.SessionId;
             var currentPath = data.CurrentPath;
             var resourceType = data.ResourceType;
-            var route = resourceType === 'folder' ? pathUtils.join(currentPath, data.Name) : data.Name;
+            var route = pathUtils.join(currentPath, data.Name);
+            console.log('share route:', route);
 
             userUtils.getUserById(session, sessionId, function (err, reply) {
                 if (reply) {
