@@ -1,6 +1,8 @@
 var passport = require('passport')
     , GoogleStrategy = require('passport-google-oauth').OAuth2Strategy
-    , FacebookStrategy = require('passport-facebook').Strategy;
+    , FacebookStrategy = require('passport-facebook').Strategy
+    , DoubanStrategy = require('passport-douban').Strategy
+    , GithubStrategy = require('passport-github').Strategy;
 
 var config = require('../config/configUtils');
 var userUtils = require('./userUtils');
@@ -44,6 +46,42 @@ passport.use(new FacebookStrategy({
     }
 ));
 
+passport.use(new DoubanStrategy({
+        clientID: config.getConfigs().DOUBAN_APP_ID,
+        clientSecret: config.getConfigs().DOUBAN_APP_SECRET,
+        callbackURL: config.getConfigs().DOUBAN_RETURN_URL
+    },
+    function(accessToken, refreshToken, profile, done) {
+        console.log('douban profile: ' + JSON.stringify(profile));
+        var userInfo = {
+            'type': 'douban',
+            'userid': profile.id,
+            'name': profile.name,
+            'email': profile.email,
+            'avatar': profile.avatar
+        };
+        return done(null, userInfo);
+    }
+));
+
+passport.use(new GithubStrategy({
+        clientID: config.getConfigs().GIT_APP_ID,
+        clientSecret: config.getConfigs().GIT_APP_SECRET,
+        callbackURL: config.getConfigs().GIT_RETURN_URL
+    },
+    function(accessToken, refreshToken, profile, done) {
+        console.log('github profile: ' + JSON.stringify(profile));
+        var userInfo = {
+            'type': 'github',
+            'userid': profile.id,
+            'name': profile.name,
+            'email': profile.alt,
+            'avatar': profile.avatar
+        };
+        return done(null, userInfo);
+    }
+));
+
 passport.serializeUser(function (user, done) {
     done(null, user);
 });
@@ -77,6 +115,32 @@ module.exports = function (app, session) {
 
     app.get('/auth/facebook/return',
         passport.authenticate('facebook', { failureRedirect: '/login' }),
+        function (req, res) {
+            if (req.user) {
+                session.set(req, 'user', JSON.stringify(req.user), function (err, reply) {
+                });
+                res.redirect('/user?sid=' + req.cookies['session_id']);
+            }
+        });
+
+    app.get('/auth/github',
+        passport.authenticate('github', { failureRedirect: '/login', scope: ['user'] }));
+
+    app.get('/auth/github/return',
+        passport.authenticate('github', { failureRedirect: '/login' }),
+        function (req, res) {
+            if (req.user) {
+                session.set(req, 'user', JSON.stringify(req.user), function (err, reply) {
+                });
+                res.redirect('/user?sid=' + req.cookies['session_id']);
+            }
+        });
+
+    app.get('/auth/douban',
+        passport.authenticate('douban', { failureRedirect: '/login', scope: ['douban_basic_common'] }));
+
+    app.get('/auth/douban/return',
+        passport.authenticate('douban', { failureRedirect: '/login' }),
         function (req, res) {
             if (req.user) {
                 session.set(req, 'user', JSON.stringify(req.user), function (err, reply) {
