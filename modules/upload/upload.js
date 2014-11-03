@@ -62,7 +62,7 @@ module.exports.bind = function (server) {
             //combine path
             userUtils.getUserRootPath(sessionId, function (err, userRootPath) {
                 var filePath = path.join(userRootPath, currentPath, name);
-                if(fs.existsSync(filePath)){
+                if (fs.existsSync(filePath)) {
                     socket.emit('errorOccurs', {error: 'File exists already.'});
                     return;
                 }
@@ -199,6 +199,7 @@ module.exports.bind = function (server) {
             });
         });
 
+        //sharing folder or file
         socket.on('share', function (data) {
             var sessionId = data.SessionId;
             var currentPath = data.CurrentPath;
@@ -215,14 +216,35 @@ module.exports.bind = function (server) {
             });
         });
 
+        //renaming file
         socket.on('rename', function (data) {
             var sessionId = data.SessionId;
             var currentPath = data.CurrentPath;
             var newName = data.NewName;
-            var name = data.Name;
             var resourceType = data.ResourceType;
+            var route = resourceType === 'folder' ? path.join(currentPath, data.Name) : data.Name;
 
+            userUtils.getUserById(session, sessionId, function (err, reply) {
+                if (reply) {
+                    var user = JSON.parse(reply);
 
+                    //physical renaming
+                    shareUtils.getSpecificStorage(user.type, user.userid, resourceType, route,
+                        function (err, resource) {
+                            if (resource) {
+                                var newPath = pathUtils.renameSync(resource.path, newName);
+
+                                //storage renaming
+                                storageUtils.renameResourceById(session, sessionId, currentPath, route,
+                                    resourceType, newName, newPath, function (err) {
+                                        if (!err) {//refresh client storage model
+                                            emitChangeModel(socket, session, sessionId);
+                                        }
+                                    });
+                            }
+                        });
+                }
+            });
         });
     });
 };

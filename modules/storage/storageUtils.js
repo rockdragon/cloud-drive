@@ -25,6 +25,7 @@ module.exports.addFolderBySessionId = addFolderBySessionId;
 module.exports.addFileBySessionId = addFileBySessionId;
 module.exports.addFile = addFile;
 module.exports.deleteResourceById = deleteResourceById;
+module.exports.renameResourceById = renameResourceById;
 module.exports.findFolder = findFolder;
 module.exports.findFile = findFile;
 
@@ -71,7 +72,7 @@ function saveStorage(session, req, storage, callback) {
 /*
  retrieve a user storage record
  */
-function getStorageRecordBySessionId(session, id, callback){
+function getStorageRecordBySessionId(session, id, callback) {
     var getUserByIdAsync = getUserById(session, id);
     getUserByIdAsync.subscribe(function (reply) {
         if (reply) {
@@ -268,7 +269,7 @@ function findFile(storage, route) {
  delete specific resource from storage
  @resourceType file/folder
  */
-function deleteResourceById(session, id, parentRoute, route, resourceType, callback){
+function deleteResourceById(session, id, parentRoute, route, resourceType, callback) {
     var getUserByIdAsync = getUserById(session, id);
     getUserByIdAsync.subscribe(function (reply) {
         if (reply) {
@@ -279,13 +280,13 @@ function deleteResourceById(session, id, parentRoute, route, resourceType, callb
                 if (parentFolder) {
                     var collection = resourceType === 'folder' ? parentFolder.folders : parentFolder.files;
                     var index = -1;
-                    for(var j = 0, len = collection.length; j<len;j++){
-                        if(collection[j].route === route) {
+                    for (var j = 0, len = collection.length; j < len; j++) {
+                        if (collection[j].route === route) {
                             index = j;
                             break;
                         }
                     }
-                    if(index > -1) {
+                    if (index > -1) {
                         collection.splice(index, 1);
                         saveStorageByUser(user, storage, function (err) {
                             callback(err);
@@ -297,3 +298,32 @@ function deleteResourceById(session, id, parentRoute, route, resourceType, callb
     }, errorOccurs);
 }
 
+function renameResourceById(session, id, parentRoute, route, resourceType, newName, newPath, callback) {
+    var getUserByIdAsync = getUserById(session, id);
+    getUserByIdAsync.subscribe(function (reply) {
+        if (reply) {
+            var user = JSON.parse(reply);
+            getStorageRecordByUser(user, function (err, record) {
+                var storage = record.storage;
+                var parentFolder = findFolder(storage, parentRoute);
+                if (parentFolder) {
+                    var collection = resourceType === 'folder' ? parentFolder.folders : parentFolder.files;
+                    var index = -1;
+                    for (var j = 0, len = collection.length; j < len; j++) {
+                        if (collection[j].route === route) {
+                            index = j;
+                            break;
+                        }
+                    }
+                    if (index > -1) {
+                        collection[index].name = newName;
+                        collection[index].path = newPath;
+                        saveStorageByUser(user, storage, function (err) {
+                            callback(err);
+                        });
+                    }
+                }
+            });
+        }
+    }, errorOccurs);
+}

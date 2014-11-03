@@ -29,3 +29,12 @@ module.exports.deleteTreeSync = function(dirPath){
         rimraf.sync(dirPath);
     }
 };
+
+module.exports.renameSync = function(dirPath, newName){
+    if(fs.existsSync(dirPath)){
+        var dir = path.dirname(dirPath);
+        var newPath = path.join(dir, newName);
+        fs.renameSync(dirPath, newPath);
+        return newPath;
+    }
+};
