@@ -16,6 +16,8 @@
 //    var basename = path.dirname('/Users/moye/files/1.html');
 //    console.log(basename);
 
-    pathUtils.renameSync('f:\\npm-debug.log', 'npm-debug.1.log');
+//    pathUtils.renameSync('f:\\npm-debug.log', 'npm-debug.1.log');
 
+    var joinString = pathUtils.join('/path//', '//wot/', '1.jpg')
+    console.log(joinString);
 })();

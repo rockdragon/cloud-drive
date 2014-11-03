@@ -98,6 +98,20 @@
                     $scope.$apply();
                 }
             };
+            $scope.rename = function(resourceType, name, newName){
+                var collection = resourceType === 'folder' ? $scope.model.currentFolder.folders : $scope.model.currentFolder.files;
+                var index = -1;
+                for (var i = 0, len = collection.length; i < len; i++) {
+                    if (collection[i].name === name) {
+                        index = i;
+                        break;
+                    }
+                }
+                if (index > -1) {
+                    collection[i].name = newName;
+                    $scope.$apply();
+                }
+            };
             $scope.changeModel = function (storage) {
                 DataService.changeData(storage);
                 $scope.model = DataService.data;
@@ -325,8 +339,7 @@
             };
             $('#folderName').blur(function () {
                 folderNameHandle($(this).val());
-            });
-            $('#folderName').keydown(function (e) {
+            }).keydown(function (e) {
                 if (e.keyCode == 13) {
                     $(this).blur();
                 }
@@ -368,6 +381,8 @@
                         'SessionId': $.cookie('session_id'),
                         'CurrentPath': getAngularScope().model.currentFolder.route
                     });
+                    hideRename();
+                    getAngularScope().rename(renameInfo.Type, renameInfo.Name, newName);
                 } else {
                     showErrorMessage('Please input a valid new name.');
                 }

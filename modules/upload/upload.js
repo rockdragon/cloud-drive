@@ -176,7 +176,7 @@ module.exports.bind = function (server) {
             var sessionId = data.SessionId;
             var currentPath = data.CurrentPath;
             var resourceType = data.ResourceType;
-            var route = resourceType === 'folder' ? path.join(currentPath, data.Name) : data.Name;
+            var route = pathUtils.join(currentPath, data.Name);
 
             userUtils.getUserById(session, sessionId, function (err, reply) {
                 if (reply) {
@@ -189,7 +189,7 @@ module.exports.bind = function (server) {
                             }
                         });
                     //storage delete
-                    storageUtils.deleteResourceById(session, sessionId, currentPath, route, resourceType,
+                    storageUtils.deleteResourceById(session, sessionId, currentPath, data.Name, resourceType,
                         function (err) {
                             if (!err) {//refresh client storage model
                                 emitChangeModel(socket, session, sessionId);
@@ -204,7 +204,7 @@ module.exports.bind = function (server) {
             var sessionId = data.SessionId;
             var currentPath = data.CurrentPath;
             var resourceType = data.ResourceType;
-            var route = resourceType === 'folder' ? path.join(currentPath, data.Name) : data.Name;
+            var route = resourceType === 'folder' ? pathUtils.join(currentPath, data.Name) : data.Name;
 
             userUtils.getUserById(session, sessionId, function (err, reply) {
                 if (reply) {
@@ -222,11 +222,15 @@ module.exports.bind = function (server) {
             var currentPath = data.CurrentPath;
             var newName = data.NewName;
             var resourceType = data.ResourceType;
-            var route = resourceType === 'folder' ? path.join(currentPath, data.Name) : data.Name;
+            var route = pathUtils.join(currentPath, data.Name);
+
+            console.log('rename', currentPath, data.Name, newName, resourceType);
 
             userUtils.getUserById(session, sessionId, function (err, reply) {
                 if (reply) {
                     var user = JSON.parse(reply);
+
+                    console.log('user', user);
 
                     //physical renaming
                     shareUtils.getSpecificStorage(user.type, user.userid, resourceType, route,
@@ -235,7 +239,7 @@ module.exports.bind = function (server) {
                                 var newPath = pathUtils.renameSync(resource.path, newName);
 
                                 //storage renaming
-                                storageUtils.renameResourceById(session, sessionId, currentPath, route,
+                                storageUtils.renameResourceById(session, sessionId, currentPath, data.Name,
                                     resourceType, newName, newPath, function (err) {
                                         if (!err) {//refresh client storage model
                                             emitChangeModel(socket, session, sessionId);

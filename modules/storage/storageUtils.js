@@ -250,6 +250,7 @@ function findFolder(storage, route) {
  find file by route
  */
 function findFile(storage, route) {
+    console.log('findFIle', route);
     var endIndex = route.lastIndexOf('/');
     if (endIndex > -1) {
         var folderRoute = route.substring(0, endIndex || 1);
@@ -281,7 +282,7 @@ function deleteResourceById(session, id, parentRoute, route, resourceType, callb
                     var collection = resourceType === 'folder' ? parentFolder.folders : parentFolder.files;
                     var index = -1;
                     for (var j = 0, len = collection.length; j < len; j++) {
-                        if (collection[j].route === route) {
+                        if (collection[j].name === route) {
                             index = j;
                             break;
                         }
@@ -310,7 +311,7 @@ function renameResourceById(session, id, parentRoute, route, resourceType, newNa
                     var collection = resourceType === 'folder' ? parentFolder.folders : parentFolder.files;
                     var index = -1;
                     for (var j = 0, len = collection.length; j < len; j++) {
-                        if (collection[j].route === route) {
+                        if (collection[j].name === route) {
                             index = j;
                             break;
                         }
