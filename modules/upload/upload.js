@@ -218,6 +218,11 @@ module.exports.bind = function (server) {
         socket.on('rename', function (data) {
             var sessionId = data.SessionId;
             var currentPath = data.CurrentPath;
+            var newName = data.NewName;
+            var name = data.Name;
+            var resourceType = data.ResourceType;
+
+
         });
     });
 };

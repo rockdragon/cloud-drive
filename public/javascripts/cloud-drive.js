@@ -149,15 +149,25 @@
         $('#share').modal();
         $('#shareLink').val(link).select();
     };
+    var showRename = function (name, type) {
+        $('#renameInfo').val(JSON.stringify({Name: name, Type: type}));
+        $('#rename').modal();
+        $('#renameName').val(name).focus();
+    };
+    var hideRename = function () {
+        $('#rename').modal('hide');
+    };
     // show error then fade out
     var showErrorMessage = function (msg) {
         hideDialog();
         hideConfirm();
+        hideRename();
         $('#folderNameLabel').text(msg).show().fadeOut(5000);
     };
     var contextMenuHandle = function (key, options, type) {
         console.log(key, options);
-        var resourceName = options.$trigger[0].id.split('_')[1];
+        var target = options.$trigger[0];
+        var resourceName = target.id.split('|')[1];
         if (key === 'delete') {
             $('#deleteType').val(type);
             showConfirm(resourceName);
@@ -170,7 +180,7 @@
             $('#shareInfo').val(JSON.stringify(shareInfo)).click();
         }
         if (key === 'rename') {
-            
+            showRename(resourceName, type);
         }
     };
 
@@ -188,7 +198,7 @@
             },
             items: {
                 "share": {name: "Share Link", icon: "copy"},
-                "rename": {name: "Rename", icon: "edit"},
+//                "rename": {name: "Rename", icon: "edit"},
                 "sep1": "---------",
                 "delete": {name: "Delete", icon: "delete"}
             }
@@ -345,6 +355,22 @@
                     'SessionId': $.cookie('session_id'),
                     'CurrentPath': getAngularScope().model.currentFolder.route
                 });
+            });
+
+            // Rename
+            $('#sureRename').click(function () {
+                var renameInfo = JSON.parse($('#renameInfo').val());
+                var newName = $('#renameName').val();
+                if(newName && newName !== renameInfo.Name) {
+                    socket.emit('rename', { 'Name': renameInfo.Name,
+                        'NewName': newName,
+                        'ResourceType': renameInfo.Type,
+                        'SessionId': $.cookie('session_id'),
+                        'CurrentPath': getAngularScope().model.currentFolder.route
+                    });
+                } else {
+                    showErrorMessage('Please input a valid new name.');
+                }
             });
         } else {
             $('#fileName').html('Your browser does not support the File API. please change a newer browser.');

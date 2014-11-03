@@ -17,7 +17,7 @@
         <td></td>
     </tr>
 
-    <tr ng-repeat="folder in folders" id="folder_{{ folder.name }}" class="lineFolder">
+    <tr ng-repeat="folder in folders" id="folder|{{ folder.name }}" class="lineFolder">
         <td class="filename-col">
             <img class="sprite sprite_web s_web_folder_32 icon"
                  src="/images/icon_spacer.gif">
@@ -27,7 +27,7 @@
         <td>--</td>
     </tr>
 
-    <tr ng-repeat="file in files" id="file_{{ file.name }}" class="lineFile">
+    <tr ng-repeat="file in files" id="file|{{ file.name }}" class="lineFile">
         <td class="filename-col">
             <img class="sprite sprite_web {{ file.mime.i }} icon" alt="{{ file.name }}"
                  src="/images/icon_spacer.gif">
