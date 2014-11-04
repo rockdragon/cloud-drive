@@ -204,9 +204,6 @@
             }
         };
 
-        //HTML File detection
-        window.addEventListener('load', ready);
-
         function ready() {
             $('#storageTable').show();
 
@@ -410,6 +407,9 @@
         function updateProgressBar(percent) {
             $('#progressBar').val(percent);
         }
+
+        //HTML File detection
+        window.addEventListener('load', ready);
     } else {
         var warningText = 'Your browser does not support the File API. please change a newer browser';
         alert(warningText);
