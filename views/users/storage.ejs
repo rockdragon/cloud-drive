@@ -27,7 +27,7 @@
         <td>--</td>
     </tr>
 
-    <tr ng-repeat="file in files" id="file|{{ file.name }}" class="lineFile">
+    <tr ng-repeat="file in files" id="file|{{ file.name }}" path="{{file.path}}" class="lineFile">
         <td class="filename-col">
             <img class="sprite sprite_web {{ file.mime.i }} icon" alt="{{ file.name }}"
                  src="/images/icon_spacer.gif">
@@ -40,4 +40,5 @@
     <input id="storageData" type="hidden" value="<%= JSON.stringify(storage) %>"/>
     <input id="currentPath" type="hidden" value="{{ $scope.model.currentFolder.route }}"/>
     <% } %>
+    <input id="downloadName" type="hidden" />
 </table>

@@ -251,5 +251,19 @@ module.exports.bind = function (server) {
                 }
             });
         });
+
+        //download link
+        socket.on('download', function(data){
+            var sessionId = data.SessionId;
+            var filePath = data.FilePath;
+
+            userUtils.getUserById(session, sessionId, function (err, reply) {
+                if (reply) {
+                    var user = JSON.parse(reply);
+                    var link = shareUtils.generateDownloadLinkSync(user.type, user.userid, filePath);
+                    socket.emit('downlink', {link : link});
+                }
+            });
+        });
     });
 };

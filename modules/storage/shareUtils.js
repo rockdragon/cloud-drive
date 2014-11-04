@@ -6,6 +6,19 @@ var storageUtils = require('./storageUtils');
 
 var delimiter = '|';
 var algorithm = 'aes-256-cbc';
+
+function encrypt(str) {
+    var cipher = crypto.createCipher(algorithm, configUtils.getConfigs().SECRET);
+    var result = cipher.update(str, 'utf8', 'hex');
+    result += cipher.final('hex');
+    return result;
+}
+function decrypt(str) {
+    var cipher = crypto.createDecipher(algorithm, configUtils.getConfigs().SECRET);
+    var result = cipher.update(str, 'hex', 'utf8');
+    result += cipher.final('utf8');
+    return result;
+}
 /*
  @userType
  @userId
@@ -15,11 +28,8 @@ var algorithm = 'aes-256-cbc';
  */
 module.exports.generateShareLinkSync = function (userType, userId, resourceType, route) {
     resourceType = resourceType === 'folder' ? resourceType : 'file';
-    var cipher = crypto.createCipher(algorithm, configUtils.getConfigs().SECRET);
     var concatenation = userType + delimiter + userId + delimiter + resourceType + delimiter + route;
-    var result = cipher.update(concatenation, 'utf8', 'hex');
-    result += cipher.final('hex');
-    return result;
+    return encrypt(concatenation);
 };
 
 /*
@@ -29,11 +39,9 @@ module.exports.generateShareLinkSync = function (userType, userId, resourceType,
  */
 module.exports.fromSharedLinkSync = function (link) {
     try {
-        var cipher = crypto.createDecipher(algorithm, configUtils.getConfigs().SECRET);
-        var result = cipher.update(link, 'hex', 'utf8');
-        result += cipher.final('utf8');
-        if (result && result.contains(delimiter)) {
-            var parts = result.split(delimiter);
+        var decrypted = decrypt(link);
+        if (decrypted && decrypted.contains(delimiter)) {
+            var parts = decrypted.split(delimiter);
             if (parts.length === 4) {
                 return {
                     userType: parts[0],
@@ -65,4 +73,39 @@ module.exports.getSpecificStorage = function (userType, userId, resourceType, ro
         } else
             callback(err, null);
     });
+};
+
+/*
+ @userType
+ @userId
+ @filePath /files/user/type/1.zip
+ based on AES symmetrical cipher
+ */
+module.exports.generateDownloadLinkSync = function (userType, userId, filePath) {
+    var concatenation = userType + delimiter + userId + delimiter + filePath;
+    return encrypt(concatenation);
+};
+
+/*
+ @link: e.g. 4c3857df7d7420061939143435cbccd1a72cfe60e883816334e57f76782ac4d5
+ based on AES symmetrical cipher
+ @return {userType, userId, filePath}
+ */
+module.exports.fromDownloadLinkSync = function (link) {
+    try {
+        var decrypted = decrypt(link);
+        if (decrypted && decrypted.contains(delimiter)) {
+            var parts = decrypted.split(delimiter);
+            if (parts.length === 3) {
+                return {
+                    userType: parts[0],
+                    userId: parts[1],
+                    filePath: parts[2]
+                };
+            }
+        }
+    } catch (e) {
+        console.log('shareUtils.fromSharedLinkSync occurs error:', e);
+    }
+    return null;
 };

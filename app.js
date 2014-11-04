@@ -35,11 +35,13 @@ var login = require('./routes/login');
 var share = require('./routes/share');
 var go404 = require('./routes/404');
 var logout = require('./routes/logout');
+var file = require('./routes/file');
 app.use('/', index);
 app.use('/login', login);
 app.use('/share/', share);
 app.use('/404', go404);
 app.use('/logout', logout);
+app.use('/file', file);
 
 // catch 404 and forward to error handler
 app.use(function (req, res, next) {
