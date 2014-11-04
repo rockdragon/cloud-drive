@@ -132,11 +132,11 @@
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-                <h4 class="modal-title">Share link to <span class="shareName"></span> </h4>
+                <h4 class="modal-title">Share link to <span class="shareName"></span></h4>
             </div>
             <div class="modal-body">
                 <p>
-                    <input type="text" readonly="True" id="shareLink" class="form-control" />
+                    <input type="text" readonly="True" id="shareLink" class="form-control"/>
                     <br/>
                     Copy or Click this link:
                     <a id="shareHref" target="_blank"><span class="shareName"></span></a>
@@ -160,7 +160,7 @@
             <div class="modal-body">
                 <div class="input-group">
                     <span class="input-group-addon">:)</span>
-                    <input type="text" id="renameName" class="form-control" />
+                    <input type="text" id="renameName" class="form-control"/>
                     <span class="input-group-btn">
                       <button id="sureRename" class="btn btn-default" type="button">Rename</button>
                     </span>
@@ -178,8 +178,9 @@
                 <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
                 <h4 class="modal-title">{{ currentFile.name }}</h4>
             </div>
-            <div id="viewContainer">
-              <iframe id="viewFrame"></iframe>
+            <div id="viewContainer" style="height:426px;">
+                <iframe id="viewFrame"
+                        onload="parent.document.getElementById('viewContainer').style.height=parent.document.getElementById('view').scrollHeight + 'px'"></iframe>
             </div>
         </div>
     </div>
