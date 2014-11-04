@@ -4,6 +4,7 @@ logs
 
 #idea
 .idea
+.DS_Store
 
 # config files
 *.cfg

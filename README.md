@@ -28,8 +28,8 @@
         "linux": "/var/files"
     },
     "certs":{
-            "key":  "/Users/moye/certs/2_www.fun4.tv.key",
-            "cert": "/Users/moye/certs/1_www.fun4.tv_bundle.crt"
+            "key":  "/Users/certs/server.key",
+            "cert": "/Users/certs/server.crt"
          },
     "SERVER_TYPE": "https"
 }
