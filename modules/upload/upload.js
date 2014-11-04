@@ -254,7 +254,7 @@ module.exports.bind = function (server) {
         });
 
         //download link
-        socket.on('download', function(data){
+        var emitLink = function(data, msgName){
             var sessionId = data.SessionId;
             var filePath = data.FilePath;
 
@@ -262,9 +262,17 @@ module.exports.bind = function (server) {
                 if (reply) {
                     var user = JSON.parse(reply);
                     var link = shareUtils.generateDownloadLinkSync(user.type, user.userid, filePath);
-                    socket.emit('downlink', {link : link});
+                    socket.emit(msgName, {link : link});
                 }
             });
+        };
+        socket.on('download', function(data){
+            emitLink(data, 'downlink');
+        });
+
+        //view link
+        socket.on('view', function(data){
+            emitLink(data, 'viewLink');
         });
     });
 };

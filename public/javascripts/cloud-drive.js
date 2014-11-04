@@ -67,9 +67,16 @@
                 $scope.model = DataService.data;
                 $scope.binding($scope.model);
 
+                //navigate to folder
                 $scope.navigate = function (index) {
                     $scope.binding($scope.folders[index]);
                     $scope.writeLinkPaths();
+                };
+                //view file
+                $scope.view = function(index){
+                    var file = $scope.files[index];
+                    $scope.currentFile = file;
+                    $('#viewName').val(file.path).click();
                 };
 
                 var modelChanged = function (oldValue, newValue, scope) {
@@ -173,6 +180,9 @@
         var hideRename = function () {
             $('#rename').modal('hide');
         };
+        var showView = function(){
+            $('#view').modal();
+        };
         // show error then fade out
         var showErrorMessage = function (msg) {
             hideDialog();
@@ -267,8 +277,12 @@
             });
             //received download link
             socket.on('downlink', function (data) {
-                var fileUrl = '/file/' + data.link;
-                window.location = fileUrl;
+                window.location = '/file/' + data.link;
+            });
+            //received view link
+            socket.on('viewLink', function(data){
+                $('#viewFrame').attr('src', '/view/' + data.link);
+                showView();
             });
 
             //for add file
@@ -395,12 +409,20 @@
                 }
             });
 
-            $('#downloadName').click(function () {
-                var path = $(this).val();
-                socket.emit('download', {
+            // request link message
+            var emitRequestLink = function(path, msgName){
+                socket.emit(msgName, {
                     'SessionId': $.cookie('session_id'),
                     'FilePath': path
                 });
+            };
+            // download File message
+            $('#downloadName').click(function () {
+                emitRequestLink($(this).val(), 'download');
+            });
+            // view File message
+            $('#viewName').click(function(){
+                emitRequestLink($(this).val(), 'view');
             });
         }
 

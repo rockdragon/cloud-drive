@@ -7819,3 +7819,26 @@ ul.horizontal li {
 #storageTable tr{
     -webkit-user-select: none;
 }
+#view .modal-dialog{
+    position: absolute;
+    top: 0%;
+    left: 50%;
+    margin-left: -450px;
+    height: 90%;
+    min-height: 300px;
+    max-height: 1000px;
+    width: 900px;
+    box-shadow: 0px 2px 4px 0px rgba(0,0,0,0.5);
+    border: 0;
+    -moz-border-radius: 7px;
+    -webkit-border-radius: 7px;
+    border-radius: 7px;
+    background: #fff;
+    overflow: hidden;
+    z-index: 0;
+}
+#viewContainer, #viewContainer iframe{
+    width: 100%;
+    border: 0;
+    height: 100%;
+}

@@ -10,7 +10,7 @@ router.route('/:link').get(function (req, res) {
     if (link) {
         var descriptor = shareUtils.fromDownloadLinkSync(link);
         console.log('descriptor', descriptor);
-        if (descriptor) {//{userType, userId, filePath, name}
+        if (descriptor) {//{userType, userId, filePath}
             fs.exists(descriptor.filePath, function (exists) {
                 if (exists) {
                     res.attachment(descriptor.filePath);

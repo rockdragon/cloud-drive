@@ -31,7 +31,7 @@
         <td class="filename-col">
             <img class="sprite sprite_web {{ file.mime.i }} icon" alt="{{ file.name }}"
                  src="/images/icon_spacer.gif">
-            <a href="#">{{ file.name }}</a>
+            <a ng-click="view($index)">{{ file.name }}</a>
         </td>
         <td>{{ file.mime.t }}</td>
         <td>{{ file.modified }}</td>
@@ -41,4 +41,5 @@
     <input id="currentPath" type="hidden" value="{{ $scope.model.currentFolder.route }}"/>
     <% } %>
     <input id="downloadName" type="hidden" />
+    <input id="viewName" type="hidden" />
 </table>
