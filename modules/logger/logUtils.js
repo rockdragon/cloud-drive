@@ -1,6 +1,13 @@
 var winston = require('winston');
 var path = require('path');
-var logFile = path.join(process.cwd(), 'logs/access.log');
+var fs = require('fs');
+var pathUtils = require('../upload/pathUtils');
+var logPath = path.join(process.cwd(), 'logs/'),
+    logFile = path.join(logPath, 'access.log');
+
+if(!fs.existsSync(logPath)){
+    pathUtils.mkdirAbsoluteSync(logPath);
+}
 
 var logger = new (winston.Logger)({
     transports:[
@@ -14,4 +21,9 @@ var logger = new (winston.Logger)({
     ]
 });
 
-module.exports = logger;
+/*
+    supply a integration of console-logger and file-logger
+* */
+module.exports.log = function(msg){
+    logger.info(msg);
+};
