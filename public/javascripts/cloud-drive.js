@@ -142,7 +142,6 @@
 
         // generate socket connection
         var socketClient = function () {
-            var port = $('#port').val();
             var socket = io.connect();
             socket.send('client message');
             socket.on('message', function (time) {
