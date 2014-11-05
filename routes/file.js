@@ -14,6 +14,7 @@ router.route('/:link').get(function (req, res) {
             fs.exists(descriptor.filePath, function (exists) {
                 if (exists) {
                     res.attachment(descriptor.filePath);
+                    res.setHeader('Content-Length', fs.statSync(descriptor.filePath).size);
 
                     var readStream = fs.createReadStream(descriptor.filePath);
                     readStream.on('open', function(){

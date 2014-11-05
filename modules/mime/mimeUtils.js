@@ -16,8 +16,10 @@ var mimeTypes = {
 
     "text/plain": {t: "Document", i: "s_web_page_white_text_32"},
     "application/msword": {t: "Document", i: "s_web_page_white_word_32"},
+    "application/vnd.openxmlformats-officedocument.wordprocessingml.document": {t: "Document", i: "s_web_page_white_word_32"},
     "application/vnd.ms-powerpoint": {t: "Document", i: "s_web_page_white_powerpoint_32"},
     "application/vnd.ms-excel": {t: "Document", i: "s_web_page_white_32"},
+    "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet": {t: "Document", i: "s_web_page_white_32"},
     "application/pdf": {t: "Document", i: "s_web_page_white_acrobat_32"},
 
     "text/html": {t: "Code", i: "s_web_page_white_code_32"},

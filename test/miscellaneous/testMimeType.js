@@ -20,8 +20,10 @@
     console.log(mime.lookup('temp.txt'));
     console.log(mime.lookup('temp.pdf'));
     console.log(mime.lookup('temp.doc'));
+    console.log(mime.lookup('temp.docx'));
     console.log(mime.lookup('temp.ppt'));
     console.log(mime.lookup('temp.xls'));
+    console.log(mime.lookup('temp.xlsx'));
 
     //code
     console.log(mime.lookup('temp.html'));
