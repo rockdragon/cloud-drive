@@ -212,6 +212,9 @@
                 $('#downloadName').val(path).click();
             }
         };
+        var updateProgressBar = function(percent) {
+            $('#progressBar').val(percent);
+        };
 
         function ready() {
             $('#storageTable').show();
@@ -282,6 +285,15 @@
             socket.on('viewLink', function(data){
                 $('#viewFrame').attr('src', '/view/' + data.link);
                 showView();
+            });
+            //user login status
+            socket.on('mustLogin', function(data){
+                if(data.mustLogin === 'y'){
+                    showErrorMessage('You should re-login');
+                    setTimeout(function(){ window.location = '/login'; }, 1000);
+                } else{
+                    setTimeout(emitNeedLogin, 2000);
+                }
             });
 
             //for add file
@@ -423,10 +435,12 @@
             $('#viewName').click(function(){
                 emitRequestLink($(this).val(), 'view');
             });
-        }
 
-        function updateProgressBar(percent) {
-            $('#progressBar').val(percent);
+            // user login status polling
+            var emitNeedLogin = function(){
+                socket.emit('needLogin', {'SessionId': $.cookie('session_id')});
+            };
+            emitNeedLogin();
         }
 
         //HTML File detection

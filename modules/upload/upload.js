@@ -253,26 +253,53 @@ module.exports.bind = function (server) {
             });
         });
 
-        //download link
-        var emitLink = function(data, msgName){
+        //download/preview link
+        var emitLink = function (data, msgName) {
             var sessionId = data.SessionId;
             var filePath = data.FilePath;
+            var usertype = 'anonymousUser'; //supply anonymous link
+            var userid = '12345678';
 
-            userUtils.getUserById(session, sessionId, function (err, reply) {
-                if (reply) {
-                    var user = JSON.parse(reply);
-                    var link = shareUtils.generateDownloadLinkSync(user.type, user.userid, filePath);
-                    socket.emit(msgName, {link : link});
-                }
-            });
+            if (sessionId) {
+                userUtils.getUserById(session, sessionId, function (err, reply) {
+                    if (reply) {
+                        var user = JSON.parse(reply);
+                        usertype = user.type;
+                        userid = user.userid;
+                    }
+                    var link = shareUtils.generateDownloadLinkSync(usertype, userid, filePath);
+                    socket.emit(msgName, {link: link});
+                });
+            } else {
+                var link = shareUtils.generateDownloadLinkSync(usertype, userid, filePath);
+                socket.emit(msgName, {'link': link});
+            }
         };
-        socket.on('download', function(data){
+        socket.on('download', function (data) {
             emitLink(data, 'downlink');
         });
 
         //view link
-        socket.on('view', function(data){
+        socket.on('view', function (data) {
             emitLink(data, 'viewLink');
+        });
+
+        //Whether need to login
+        var emitLogin = function (needLogin) {
+            socket.emit('mustLogin', {'mustLogin': needLogin});
+        };
+        socket.on('needLogin', function (data) {
+            if (data.SessionId) {
+                userUtils.getUserById(session, data.SessionId, function (err, reply) {
+                    if (reply) {
+                        emitLogin('n');
+                    } else {
+                        emitLogin('y');
+                    }
+                });
+            } else {
+                emitLogin('y');
+            }
         });
     });
 };

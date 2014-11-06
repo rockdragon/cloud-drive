@@ -12,7 +12,6 @@ var renderUser = function(res, user, storage){
 
 /* GET home page. */
 router.route('/').get(function (req, res) {
-    res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
     var user = null;
     userUtils.getUser(session, req, function (err, reply) {
         if (err)
