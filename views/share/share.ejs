@@ -33,11 +33,11 @@
                         <td>--</td>
                     </tr>
 
-                    <tr ng-repeat="file in files" id="file|{{ folder.name }}" class="lineFile">
+                    <tr ng-repeat="file in files" id="file|{{ folder.name }}" path="{{file.path}}" class="lineFile">
                         <td class="filename-col">
                             <img class="sprite sprite_web {{ file.mime.i }} icon" alt="{{ file.name }}"
                                  src="/images/icon_spacer.gif">
-                            <a href="#">{{ file.name }}</a>
+                            <a ng-click="view($index)">{{ file.name }}</a>
                         </td>
                         <td>{{ file.mime.t }}</td>
                         <td>{{ file.modified }}</td>
@@ -50,7 +50,8 @@
                     <input id="rootUrl" type="hidden" value="<%= rootUrl %>"/>
                     <%}%>
                 </table>
-
+                <input id="downloadName" type="hidden" />
+                <input id="viewName" type="hidden" />
             </div>
         </div>
     </div>

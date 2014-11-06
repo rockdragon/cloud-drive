@@ -78,6 +78,12 @@
                 $scope.binding($scope.folders[index]);
                 $scope.writeLinkPaths();
             };
+            //view file
+            $scope.view = function(index){
+                var file = $scope.files[index];
+                $scope.currentFile = file;
+                $('#viewName').val(file.path).click();
+            };
 
             var modelChanged = function (oldValue, newValue, scope) {
                 $scope.binding($scope.model.currentFolder);
@@ -103,9 +109,30 @@
             $scope.urlChange();
         }]);
 
-
     //HTML File detection
     window.addEventListener('load', ready);
+
+    var contextMenuHandle = function (key, options, type) {
+        console.log(key, options);
+        var target = options.$trigger[0];
+        if (key === 'download') {
+            var path = $(document.getElementById(target.id)).attr('path');
+            $('#downloadName').val(path).click();
+        }
+    };
+
+    // generate socket connection
+    var socketClient = function () {
+        var socket = io.connect();
+        socket.send('client message');
+        socket.on('message', function (time) {
+            console.log('received server timestamp:' + time);
+        });
+        return socket;
+    };
+    var showView = function(){
+        $('#view').modal();
+    };
 
     function ready() {
         $('#storageTable').show();
@@ -114,13 +141,43 @@
         $.contextMenu({
             selector: '.lineFile',
             callback: function (key, options) {
-                console.log(key + ' on ' + options.$trigger[0].id);
+                contextMenuHandle(key, options, 'file');
             },
             items: {
                 "sep1": "---------",
                 "download": {name: "Download", icon: "paste"},
                 "sep1": "---------"
             }
+        });
+
+        var socket = socketClient();
+        socket.on('connect', function () {
+            console.log('connection established.');
+        });
+        //received download link
+        socket.on('downlink', function (data) {
+            window.location = '/file/' + data.link;
+        });
+        //received view link
+        socket.on('viewLink', function(data){
+            $('#viewFrame').attr('src', '/view/' + data.link);
+            showView();
+        });
+
+        // request link message
+        var emitRequestLink = function(path, msgName){
+            socket.emit(msgName, {
+                'SessionId': $.cookie('session_id'),
+                'FilePath': path
+            });
+        };
+        // download File message
+        $('#downloadName').click(function () {
+            emitRequestLink($(this).val(), 'download');
+        });
+        // view File message
+        $('#viewName').click(function(){
+            emitRequestLink($(this).val(), 'view');
         });
     }
 
