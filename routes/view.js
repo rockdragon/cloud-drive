@@ -1,5 +1,6 @@
 var shareUtils = require('../modules/storage/shareUtils');
 var fs = require('fs');
+var basename = require('path').basename;
 var mime = require('mime');
 
 var express = require('express');
@@ -14,7 +15,13 @@ router.route('/:link').get(function (req, res) {
         if (descriptor) {//{userType, userId, filePath}
             fs.exists(descriptor.filePath, function (exists) {
                 if (exists) {
-                    res.setHeader('Content-Type', mime.lookup(descriptor.filePath));
+                    res.set('Content-Type', mime.lookup(descriptor.filePath));
+                    var filename = basename(descriptor.filePath);
+                    var filenameRepr =
+                        /[^\040-\176]/.test(filename)
+                        ? 'filename="' + encodeURI(filename) + '"; filename*=UTF-8\'\'' + encodeURI(filename)
+                        : 'filename="' + filename + '"';
+                    res.set('Content-Disposition', filenameRepr);
 
                     var readStream = fs.createReadStream(descriptor.filePath);
                     readStream.on('open', function(){
