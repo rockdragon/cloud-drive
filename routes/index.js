@@ -6,7 +6,7 @@ var userUtils = require('../modules/auth/userUtils');
 var storageUtils = require('../modules/storage/storageUtils');
 
 var renderUser = function(res, user, storage){
-    res.render('users/user_index', {title: 'Welcome.',
+    res.render('users/user_index', {title: 'user info',
         user: user, storage: storage, port: process.env.port});
 };
 

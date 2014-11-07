@@ -3,18 +3,27 @@
     <div class="page-header" id="banner">
         <div class="row">
             <div class="col-lg-4">
-                <h1><%= title %></h1>
-
                 <% if (user){ %>
-                    <dl>
-                        <dt><%= user.name %></dt>
-                        <dd><img src="<%= user.avatar %>" class="avatar" /></dd>
-                    </dl>
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title"><%= title %></h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <img src="<%= user.avatar %>" class="avatar"/>
+                            </div>
+                            <div class="col-lg-4">
+                                <strong><%= user.name %></strong> from <%= user.type %>
+                            </div>
+                        </div>
+                    </div>
+                </div>
                 <% } %>
             </div>
             <div class="col-lg-8 col-md-7 col-sm-6">
                 <% include storage %>
-                <input type="hidden" id="port" value="<%= port %>" />
+                <input type="hidden" id="port" value="<%= port %>"/>
             </div>
         </div>
     </div>
