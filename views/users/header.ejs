@@ -11,19 +11,21 @@
 <body ng-controller="storageController">
 <div class="navbar navbar-default navbar-fixed-top">
     <div class="container">
-        <div class="col-lg-4">
+        <div class="row">
             <div class="navbar-header">
                 <a href="/" class="navbar-brand">Cloud-Driver</a>
-                <!--<button class="navbar-toggle" type="button" data-toggle="collapse" data-target="#navbar-main">-->
-                <!--<span class="icon-bar"></span>-->
-                <!--<span class="icon-bar"></span>-->
-                <!--<span class="icon-bar"></span>-->
-                <!--</button>-->
+                <button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target="#navbar-main"
+                        aria-expanded="false">
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                    <span class="icon-bar"></span>
+                </button>
             </div>
-            <div id="navbar-main">
+            <div class="navbar-collapse collapse" id="navbar-main" aria-expanded="false" style="height: 1px;">
                 <ul class="nav navbar-nav">
                     <li class="dropdown">
-                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes"><%= user.name %> <span
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#" id="themes"><%= user.name %>
+                            <span
                                     class="caret"></span></a>
                         <ul class="dropdown-menu" aria-labelledby="themes">
                             <li><a href="#">设置</a></li>
@@ -32,54 +34,38 @@
                         </ul>
                     </li>
                 </ul>
-            </div>
-        </div>
-        <div class="col-lg-8 col-md-7 col-sm-6">
-            <div class="navbar-collapse collapse">
-                <div class="nav navbar-nav" id="path-actions">
-                    <ul id="pathLinks" class="horizontal ng-cloak">
-                        <li ng-repeat="linkPath in linkPaths" class="action">
-                            <a href="#{{ !$first ? linkPath.i : '' }}"
-                               ng-click="bindingWithPath(linkPath.i);"
-                               class="btn-link">{{ $first ? 'root' : linkPath.t }}</a>
-                        </li>
-                    </ul>
-                </div>
                 <div class="nav navbar-nav" id="alert-actions">
                     <span id="folderNameLabel" class="label label-primary" style="display: none"></span>
                 </div>
-                <ul class="nav navbar-nav navbar-right">
-                    <li>
-                        <div id="global-actions">
-                            <ul class="horizontal">
-                                <li class="action">
-                                    <label for="upload_button">
-                                        <a id="upload_button" name="action" data-value="upload"
-                                           data-title="上传…">
-                                            <img alt="上传…" src="/images/icon_spacer.gif"
-                                                 class="sprite sprite_web s_web_upload_16">
-                                        </a>
-                                    </label>
-                                </li>
-                                <li class="action">
-                                    <label for="new_folder_button">
-                                        <a id="new_folder_button" name="action" data-value="upload"
-                                           data-title="新的文件夹">
-                                            <img alt="新的文件夹" src="/images/icon_spacer.gif"
-                                                 class="sprite sprite_web s_web_folder_add">
-                                        </a>
-                                    </label>
-                                </li>
-                                <li class="action">
-                                    <form class="s_web_search">
-                                        <input type="text" class="form-control col-lg-10" placeholder="搜索">
-                                    </form>
-                                </li>
-                            </ul>
-                        </div>
-                    </li>
-
-                </ul>
+                <div class="nav navbar-nav navbar-right">
+                    <div id="global-actions">
+                        <ul class="horizontal">
+                            <li class="action">
+                                <label for="upload_button">
+                                    <a id="upload_button" name="action" data-value="upload"
+                                       data-title="上传…">
+                                        <img alt="上传…" src="/images/icon_spacer.gif"
+                                             class="sprite sprite_web s_web_upload_16">
+                                    </a>
+                                </label>
+                            </li>
+                            <li class="action">
+                                <label for="new_folder_button">
+                                    <a id="new_folder_button" name="action" data-value="upload"
+                                       data-title="新的文件夹">
+                                        <img alt="新的文件夹" src="/images/icon_spacer.gif"
+                                             class="sprite sprite_web s_web_folder_add">
+                                    </a>
+                                </label>
+                            </li>
+                            <li class="action">
+                                <form class="s_web_search">
+                                    <input type="text" class="form-control col-lg-10" placeholder="搜索">
+                                </form>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -7737,6 +7737,7 @@ ul.horizontal li {
 .s_web_search input {
     margin-left:10px;
     height:30px;
+    font-size:0.9em;
 }
 .s_web_folder_32 {
     background-position: left -686px;
@@ -7787,14 +7788,14 @@ ul.horizontal li {
     border: 1px solid transparent;
     cursor: pointer;
 }
-.filename-col a, #path-actions a
+.filename-col a, #pathLinks a
 {
     cursor:pointer;
     color: #3d464d;
     font-size: 14px;
     white-space: pre;
 }
-#path-actions a{
+#pathLinks a{
     color: #2895f1;
 }
 #pathLinks > li + li:before {

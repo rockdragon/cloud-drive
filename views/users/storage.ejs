@@ -1,3 +1,10 @@
+<ul id="pathLinks" class="horizontal ng-cloak">
+    <li ng-repeat="linkPath in linkPaths" class="action">
+        <a href="#{{ !$first ? linkPath.i : '' }}"
+           ng-click="bindingWithPath(linkPath.i);"
+           class="btn-link">{{ $first ? 'root' : linkPath.t }}</a>
+    </li>
+</ul>
 <table id="storageTable" class="table table-striped table-hover" style="display: none;">
     <thead>
     <tr>
@@ -11,7 +18,7 @@
         <td class="filename-col">
             <img class="sprite sprite_web s_web_folder_32 icon"
                  src="/images/icon_spacer.gif">
-            <input type="text" id="folderName" focus />
+            <input type="text" id="folderName" focus/>
         </td>
         <td></td>
         <td></td>
@@ -40,6 +47,6 @@
     <input id="storageData" type="hidden" value="<%= JSON.stringify(storage) %>"/>
     <input id="currentPath" type="hidden" value="{{ $scope.model.currentFolder.route }}"/>
     <% } %>
-    <input id="downloadName" type="hidden" />
-    <input id="viewName" type="hidden" />
+    <input id="downloadName" type="hidden"/>
+    <input id="viewName" type="hidden"/>
 </table>

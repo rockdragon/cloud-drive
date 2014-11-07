@@ -22,11 +22,9 @@ router.route('/').get(function (req, res) {
         if(user) {
             storageUtils.getStorageRecordByUser(user, function(err, record){
                 if(record) {
-                    console.log('record', record);
                     renderUser(res, user, record.storage);
                 }
                 else{
-                    console.log('create user storage record.');
                     var storage = {
                         name: 'root',
                         path: userUtils.getUserRootPathByUser(user),
@@ -34,7 +32,6 @@ router.route('/').get(function (req, res) {
                         files: [],
                         folders: []
                     };
-                    console.log(JSON.stringify(storage));
                     storageUtils.saveStorageByUser(user, storage, function(err){
                         renderUser(res, user, storage);
                     })
