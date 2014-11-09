@@ -22,12 +22,13 @@
         "passport-facebook": "*",
         "passport-douban": "*",
         "passport-github": "*",
-        "formidable": "*",
         "socket.io": "*",
         "rx": "*",
         "mime": "*",
         "moment": "*",
         "underscore": "*",
-        "rimraf" : "*"
+        "rimraf": "*",
+        "koa": "*",
+        "koa-mount" : "*"
     }
 }
