@@ -1,21 +1,28 @@
 var koa = require('koa');
 var mount = require('koa-mount');
+var fs = require('fs');
+var path = require('path');
 var app = koa();
 
-app.use(mount('/hello', function *(next) {
-    yield next;
-    this.body = 'Hello world.';
+var readFile = function(dir){
+    return function(fn){
+        fs.readFile(dir, {encoding: 'utf8', flag: 'r'}, fn);
+    };
+};
+
+app.use(mount('/', function *(next) {
+    var data = yield next;
+    this.body = data;
+    console.log(this.ip);
 }));
 
-app.use(function *(next){
-    console.log(this.cookies.get('session_id'));
-    console.log(this.ip);
-    yield next;
-});
-
-app.use(function *(){
-    this.set('Content-Type', 'text/html');
-    //this.throw(401);
+app.use(function *() {
+    var filePath = path.join(process.cwd(), 'config.cfg');
+    try {
+        return yield readFile(filePath);
+    } catch(e) {
+        return this.body = e.message || "I'm dead"
+    }
 });
 
 app.listen(3000);
