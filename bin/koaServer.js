@@ -11,15 +11,14 @@ var readFile = function(dir){
 };
 
 app.use(mount('/', function *(next) {
-    var data = yield next;
-    this.body = data;
+    yield next;
     console.log(this.ip);
 }));
 
 app.use(function *() {
     var filePath = path.join(process.cwd(), 'config.cfg');
     try {
-        return yield readFile(filePath);
+        this.body = yield readFile(filePath);
     } catch(e) {
         return this.body = e.message || "I'm dead"
     }
