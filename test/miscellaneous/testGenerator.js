@@ -19,13 +19,16 @@
     //readFileIterator.next();
 
     function run(generatorFunction) {
-        var generatorItr = generatorFunction(callback);
-        function callback(err, data) {
-            if(err)
-                console.log(err);
-            generatorItr.next(data);
+        try {
+            var generatorItr = generatorFunction(callback);
+            function callback() {
+                  generatorItr.next(arguments);
+            }
+            generatorItr.next();
         }
-        generatorItr.next();
+        catch (e){
+            console.log(e.message | "I'm died.");
+        }
     }
 
     run(function* rfGenFunc(cb) {
