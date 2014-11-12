@@ -18,11 +18,19 @@
     //}
     //readFileIterator.next();
 
+    var slice = Array.prototype.slice;
+
     function run(generatorFunction) {
         try {
             var generatorItr = generatorFunction(callback);
-            function callback() {
-                  generatorItr.next(arguments);
+            function callback(err, res) {
+                if(err)
+                    generatorItr.throw(err);
+                else {
+                    var args = slice.call(arguments, 1);
+                    res = args.length > 1 ? args : res;
+                    generatorItr.next(res);
+                }
             }
             generatorItr.next();
         }
