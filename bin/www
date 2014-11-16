@@ -3,8 +3,11 @@
 (function () {
     var logger = require('../modules/logger/logUtils');
     var memwatch = require('memwatch');
+    var hd = new memwatch.HeapDiff();
     memwatch.on('leak', function(info) {
         logger.log(info);
+        var diff = hd.end();
+        console.log(diff);
     });
     memwatch.on('stats', function(stats) {
         logger.log(stats);
