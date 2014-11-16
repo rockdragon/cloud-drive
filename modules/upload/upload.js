@@ -8,7 +8,7 @@ var session = require('../sessions/sessionUtils');
 var moment = require('moment');
 var mimeUtils = require('../mime/mimeUtils');
 var shareUtils = require('../storage/shareUtils');
-var logger = require('../logger/logUtils');
+//var logger = require('../logger/logUtils');
 
 module.exports.bind = function (server) {
     var Files = {};
@@ -43,7 +43,7 @@ module.exports.bind = function (server) {
     };
 
     io.sockets.on('connection', function (socket) {
-        logger.log('a client connection established: ' + socket.id);
+        //logger.log('a client connection established: ' + socket.id);
 
         respTime(socket);
 

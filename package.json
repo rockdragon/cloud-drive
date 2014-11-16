@@ -28,7 +28,6 @@
         "moment": "*",
         "underscore": "*",
         "rimraf": "*",
-        "koa": "*",
-        "koa-mount" : "*"
+        "memwatch" : "*"
     }
 }

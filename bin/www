@@ -1,6 +1,15 @@
 #!/usr/bin/env node
 
 (function () {
+    var logger = require('../modules/logger/logUtils');
+    var memwatch = require('memwatch');
+    memwatch.on('leak', function(info) {
+        logger.log(info);
+    });
+    memwatch.on('stats', function(stats) {
+        logger.log(stats);
+    });
+
     var debug = require('debug')('cloud-drive');
 //    var sticky = require('sticky-session');
     var app = require('../app');
