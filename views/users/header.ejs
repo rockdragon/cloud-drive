@@ -79,12 +79,15 @@
                 <h4 class="modal-title">上传到 {{ model.currentFolder.route }} </h4>
             </div>
             <div class="modal-body">
-                <div>
-                    <progress id="progressBar" value="0" max="100"></progress>
+                <!--<div>-->
+                    <!--<progress id="progressBar" value="0" max="100"></progress>-->
+                <!--</div>-->
+                <div id="progressBars">
+
                 </div>
                 <input type="button" id="choose-button" value="选择文件" class="btn btn-primary">
 
-                <input type="file" id="choose-file" class="hidden"/>
+                <input type="file" id="choose-file" class="hidden" multiple="multiple" />
                 <input type="hidden" id="fileName"/>
             </div>
         </div>

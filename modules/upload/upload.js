@@ -101,7 +101,7 @@ module.exports.bind = function (server) {
                         console.log('[start] file open error: ' + err.toString());
                     else {
                         Files[name].handler = fd;
-                        socket.emit('moreData', {'position': position, 'percent': 0});
+                        socket.emit('moreData', {'name': name, 'position': position, 'percent': 0});
                     }
                 });
             });
@@ -133,12 +133,14 @@ module.exports.bind = function (server) {
                         console.log('[upload] file write error: ' + err.toString());
                     Files[name].data = ''; //Reset The Buffer
                     socket.emit('moreData', {
+                        'name': name,
                         'position': Files[name].getPosition(),
                         'percent': Files[name].getPercent() });
                 });
             }
             else {
                 socket.emit('moreData', {
+                    'name': name,
                     'position': Files[name].getPosition(),
                     'percent': Files[name].getPercent() });
             }

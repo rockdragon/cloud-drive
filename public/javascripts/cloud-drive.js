@@ -50,7 +50,7 @@
                     $scope.linkPaths = [];
                     for (var i = 0, len = paths.length; i < len; i++) {
                         accumulated += (i > 1 ? '/' : '') + paths[i];
-                        $scope.linkPaths.push({ i: accumulated, t: paths[i] });
+                        $scope.linkPaths.push({i: accumulated, t: paths[i]});
                     }
                 };
 
@@ -73,7 +73,7 @@
                     $scope.writeLinkPaths();
                 };
                 //view file
-                $scope.view = function(index){
+                $scope.view = function (index) {
                     var file = $scope.files[index];
                     $scope.currentFile = file;
                     $('#viewName').val(file.path).click();
@@ -151,11 +151,18 @@
         };
 
         var showDialog = function () {
+            $('#progressBars').html('');
             $('#uploader').modal();
         };
         var hideDialog = function () {
             $('#uploader').modal('hide');
-            updateProgressBar(0);
+            $('#progressBars').html('');
+        };
+        var addProgressBar = function (name) {
+            var html =
+                '<div><label>' + name + ':</label> <progress id="progressBar_'
+                + name + '" value="0" max="100"></progress></div>';
+            $('#progressBars').append(html);
         };
         var showConfirm = function (name) {
             $('#confirmName').text(name);
@@ -179,7 +186,7 @@
         var hideRename = function () {
             $('#rename').modal('hide');
         };
-        var showView = function(){
+        var showView = function () {
             $('#view').modal();
         };
         // show error then fade out
@@ -212,8 +219,16 @@
                 $('#downloadName').val(path).click();
             }
         };
-        var updateProgressBar = function(percent) {
-            $('#progressBar').val(percent);
+        var updateProgressBar = function (name, percent) {
+            document.getElementById('progressBar_' + name).value = percent;
+        };
+
+        Array.prototype.findByName = function (name) {
+            for (var j = 0, len = this.length; j < len; j++) {
+                if (this[j].name === name)
+                    return this[j];
+            }
+            return null;
         };
 
         function ready() {
@@ -282,28 +297,51 @@
                 window.location = '/file/' + data.link;
             });
             //received view link
-            socket.on('viewLink', function(data){
+            socket.on('viewLink', function (data) {
                 $('#viewFrame').attr('src', '/view/' + data.link);
                 showView();
             });
             //user login status
-            socket.on('mustLogin', function(data){
-                if(data.mustLogin === 'y'){
+            socket.on('mustLogin', function (data) {
+                if (data.mustLogin === 'y') {
                     showErrorMessage('You should re-login');
-                    setTimeout(function(){ window.location = '/login'; }, 1000);
-                } else{
+                    setTimeout(function () {
+                        window.location = '/login';
+                    }, 1000);
+                } else {
                     setTimeout(emitNeedLogin, 2000);
                 }
             });
 
             //for add file
-            var currentFile = null;
+            var currentFiles = [];
             var currentFileReader = null;
+            //handle one file at once
+            var uploadOneFile = function () {
+                if (currentFiles.length > 0) {
+                    var currentFile = currentFiles[0];
+                    currentFileReader = new FileReader();
+                    currentFileReader.onload = function (evnt) {
+                        socket.emit('upload', {
+                            'Name': currentFile.name,
+                            'Segment': evnt.target.result, 'SessionId': $.cookie('session_id')
+                        });
+                    };
+                    socket.emit('start', {
+                        'Name': currentFile.name,
+                        'Size': currentFile.size,
+                        'SessionId': $.cookie('session_id'),
+                        'CurrentPath': getAngularScope().model.currentFolder.route
+                    });
+                }
+            };
+
             socket.on('moreData', function (data) { // more data in progress
-                console.log('moreData: ' + JSON.stringify(data));
-                updateProgressBar(data.percent);
+                console.log('updateProgress', data.name, data.percent);
+                updateProgressBar(data.name, data.percent);
                 var position = data.position * 524288;
                 var newFile = null;
+                var currentFile = currentFiles.findByName(data.name);
                 if (currentFile.slice)
                     newFile = currentFile.slice(position, position + Math.min(524288, currentFile.size - position));
                 else if (currentFile.webkitSlice)
@@ -314,13 +352,15 @@
                     currentFileReader.readAsBinaryString(newFile); // trigger upload event
             });
             socket.on('done', function (data) {
-                console.log('[done]: ' + JSON.stringify(data.file));
                 $('#fileName').val('');
-                delete currentFileReader;
-                delete currentFile;
-                updateProgressBar(100);
+                updateProgressBar(data.file.name, 100);
+                currentFiles.splice(0, 1);
                 getAngularScope().addFile(data.file);
-                hideDialog();
+                currentFileReader = null;
+                if (currentFiles.length > 0)
+                    uploadOneFile();
+                else
+                    hideDialog();
             });
 
             $('#choose-button').click(function () {
@@ -328,19 +368,16 @@
             });
 
             $('#choose-file').on('change', function () {
-                currentFile = document.getElementById('choose-file').files[0];
-                if (currentFile) {
-                    $('#fileName').val(currentFile.name);
-                    currentFileReader = new FileReader();
-                    currentFileReader.onload = function (evnt) {
-                        socket.emit('upload', { 'Name': currentFile.name,
-                            'Segment': evnt.target.result, 'SessionId': $.cookie('session_id')});
-                    };
-                    socket.emit('start', {'Name': currentFile.name,
-                        'Size': currentFile.size,
-                        'SessionId': $.cookie('session_id'),
-                        'CurrentPath': getAngularScope().model.currentFolder.route
-                    });
+                var files = document.getElementById('choose-file').files;
+                if (files && files.length > 0) {
+                    for (var i = 0, len = files.length; i < len; i++) {
+                        var currentFile = files[i];
+                        currentFiles.push(currentFile);
+                        addProgressBar(currentFile.name);
+                        $('#fileName').val(currentFile.name);
+                    }
+                    // upload one file at once
+                    uploadOneFile();
                 }
             });
 
@@ -383,10 +420,12 @@
                 var name = $('#deleteName').val();
                 var resourceType = $('#deleteType').val();
 
-                socket.emit('delete', { 'Name': name,
+                socket.emit('delete', {
+                    'Name': name,
                     'CurrentPath': currentPath,
                     'ResourceType': resourceType,
-                    'SessionId': $.cookie('session_id')});
+                    'SessionId': $.cookie('session_id')
+                });
                 getAngularScope().remove(resourceType, name);
 
                 hideConfirm();
@@ -395,7 +434,8 @@
             // Resource sharing
             $('#shareInfo').click(function () {
                 var shareInfo = JSON.parse($(this).val());
-                socket.emit('share', { 'Name': shareInfo.shareName,
+                socket.emit('share', {
+                    'Name': shareInfo.shareName,
                     'ResourceType': shareInfo.shareType,
                     'SessionId': $.cookie('session_id'),
                     'CurrentPath': getAngularScope().model.currentFolder.route
@@ -407,7 +447,8 @@
                 var renameInfo = JSON.parse($('#renameInfo').val());
                 var newName = $('#renameName').val();
                 if (newName && newName !== renameInfo.Name) {
-                    socket.emit('rename', { 'Name': renameInfo.Name,
+                    socket.emit('rename', {
+                        'Name': renameInfo.Name,
                         'NewName': newName,
                         'ResourceType': renameInfo.Type,
                         'SessionId': $.cookie('session_id'),
@@ -421,7 +462,7 @@
             });
 
             // request link message
-            var emitRequestLink = function(path, msgName){
+            var emitRequestLink = function (path, msgName) {
                 socket.emit(msgName, {
                     'SessionId': $.cookie('session_id'),
                     'FilePath': path
@@ -432,12 +473,12 @@
                 emitRequestLink($(this).val(), 'download');
             });
             // view File message
-            $('#viewName').click(function(){
+            $('#viewName').click(function () {
                 emitRequestLink($(this).val(), 'view');
             });
 
             // user login status polling
-            var emitNeedLogin = function(){
+            var emitNeedLogin = function () {
                 socket.emit('needLogin', {'SessionId': $.cookie('session_id')});
             };
             emitNeedLogin();
