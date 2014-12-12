@@ -152,7 +152,7 @@
 
         var showDialog = function () {
             $('#progressBars').html('');
-            $('#uploader').modal();
+            $('#uploader').modal({backdrop: 'static'});
         };
         var hideDialog = function () {
             $('#uploader').modal('hide');
