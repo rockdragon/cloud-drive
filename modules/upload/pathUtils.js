@@ -52,3 +52,10 @@ function join(){
     return '';
 }
 module.exports.join = join;
+
+function getAbsolutePath(suffix) {
+    var root = process.env.cloud_home || process.cwd();
+    return path.join(root, suffix);
+}
+module.exports.getAbsolutePath = getAbsolutePath;
+

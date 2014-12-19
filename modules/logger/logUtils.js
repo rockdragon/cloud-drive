@@ -2,7 +2,7 @@ var winston = require('winston');
 var path = require('path');
 var fs = require('fs');
 var pathUtils = require('../upload/pathUtils');
-var logPath = path.join(process.cwd(), 'logs/'),
+var logPath = pathUtils.getAbsolutePath('logs/'),
     logFile = path.join(logPath, 'access.log');
 
 if(!fs.existsSync(logPath)){
