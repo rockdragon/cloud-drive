@@ -1,7 +1,6 @@
 # cloud-drive [云盘]
 
-Prerequisite
-======
+#### Prerequisite
 linux:
     export cloud_home=/xx/xxx/repo/cloud-drive
 
@@ -9,8 +8,7 @@ windows:
     set system environment variable `cloud_home`
     d:\repo\cloud-drive
 
-configuration(config.cfg)
-======
+#### configuration(config.cfg)
 
 ```JSON
 {
