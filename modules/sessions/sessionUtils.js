@@ -1,7 +1,7 @@
 var crypto = require('crypto');
 var config = require('../config/configUtils');
 
-var EXPIRES = 20 * 60 * 1000;
+var EXPIRES = 30 * 24 * 60 * 60 * 1000;
 var redisMatrix = require('./redisMatrix');
 
 var sign = function (val, secret) {
