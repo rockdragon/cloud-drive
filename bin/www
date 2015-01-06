@@ -78,6 +78,11 @@
 //        debug('Express server listening on port ' + app.get('port'));
 //    });
 
+    //Uncaught Exception
+    process.on('uncaughtException', function (err) {
+        logger.error(err);
+    });
+
     // single core settings
     var config = require('../modules/config/configUtils');
     var fs = require('fs');
