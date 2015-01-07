@@ -78,20 +78,31 @@
 //        debug('Express server listening on port ' + app.get('port'));
 //    });
 
-    // single core settings
-    var config = require('../modules/config/configUtils');
-    var fs = require('fs');
-    var serverType = config.getConfigs().SERVER_TYPE;
-    var serverTypeModule = require(serverType),
-        upload = require('../modules/upload/upload');
-    var server = serverType === 'https'
-        ? serverTypeModule.createServer({
-        key: fs.readFileSync(config.getConfigs().certs.key),
-        cert: fs.readFileSync(config.getConfigs().certs.cert)}, app)
-        : serverTypeModule.createServer(app);
-    upload.bind(server);
-    console.log('[%s] worker pid: %d , listening on port:%d', serverType, process.pid, process.env.port);
-    return server.listen(process.env.port, function () {
-        debug('Express server listening on port ', process.env.port);
+    process.on('uncaughtException', function (err) {
+        logger.error(err);
+    });
+    var domain = require('domain').create();
+    domain.on('error', function(err){
+        logger.error(err);
+    });
+
+    domain.run(function () {
+        // single core settings
+        var config = require('../modules/config/configUtils');
+        var fs = require('fs');
+        var serverType = config.getConfigs().SERVER_TYPE;
+        var serverTypeModule = require(serverType),
+            upload = require('../modules/upload/upload');
+        var server = serverType === 'https'
+            ? serverTypeModule.createServer({
+            key: fs.readFileSync(config.getConfigs().certs.key),
+            cert: fs.readFileSync(config.getConfigs().certs.cert)
+        }, app)
+            : serverTypeModule.createServer(app);
+        upload.bind(server);
+        console.log('[%s] worker pid: %d , listening on port:%d', serverType, process.pid, process.env.port);
+        return server.listen(process.env.port, function () {
+            debug('Express server listening on port ', process.env.port);
+        });
     });
 })();
