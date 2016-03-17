@@ -27,7 +27,6 @@
         "mime": "*",
         "moment": "*",
         "underscore": "*",
-        "rimraf": "*",
-        "memwatch" : "*"
+        "rimraf": "*"
     }
 }
